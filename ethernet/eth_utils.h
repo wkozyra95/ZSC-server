@@ -2,19 +2,8 @@
 #define ZSC_ETH_UTILS_H
 
 #include <stdint.h>
+#include "ethernet.h"
 
-struct eth_frame {
-    unsigned char dest[6];
-    unsigned char source[6];
-    unsigned char type[2];
-    unsigned char* payload;
-    ssize_t payloadSize;
-};
-
-struct eth_frame_raw {
-    unsigned char* frame;
-    ssize_t framesize;
-};
 
 
 struct eth_frame* raw_to_eth(struct eth_frame_raw* frame);

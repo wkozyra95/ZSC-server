@@ -43,12 +43,16 @@ struct eth_frame* raw_to_eth(struct eth_frame_raw* frame) {
  */
 struct eth_frame_raw* eth_to_raw(struct eth_frame* frame ) {
     ssize_t frame_length = 14 + frame->payloadSize;
-    unsigned char* rawFrame = malloc(sizeof(unsigned char) * frame_length);
+    struct eth_frame_raw* rawFrame = malloc(sizeof(struct eth_frame_raw));
+    rawFrame->frame = malloc(sizeof(unsigned char) * frame_length);
+    rawFrame->framesize = frame_length;
 
     memcpy(frame->dest, rawFrame, 6);
     memcpy(frame->source, rawFrame + 6, 6);
     memcpy(frame->dest, rawFrame + 12, 2);
     memcpy(frame->dest, rawFrame + 14, (unsigned int) frame->payloadSize);
+
+    return rawFrame;
 }
 
 /*
