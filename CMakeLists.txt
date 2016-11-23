@@ -2,7 +2,18 @@ cmake_minimum_required(VERSION 3.0)
 project(ZSC)
 
 set(CMAKE_INSTALL_PREFIX ${CMAKE_SOURCE_DIR})
-set(CMAKE_C_COMPILER gcc)
-set(CMAKE_C_FLAGS  "${CMAKE_C_FLAGS} -std=gnu99 -g -Wall")
+set(CMAKE_C_COMPILER g++)
+set(CMAKE_C_FLAGS  "${CMAKE_C_FLAGS} -g -Wall")
+add_compile_options(-std=c++11)
+add_executable(
+        app
+        main.cpp
+        Runner.cpp Runner.h
+        Device.cpp Device.h
+        Utils.cpp Utils.h
+        packets/AbstractPacket.cpp packets/AbstractPacket.h
+        packets/RawFrame.cpp packets/RawFrame.h
+        packets/EthernetFrame.cpp packets/EthernetFrame.h
+)
 
-add_executable(app main.c ethernet/ethernet.c ethernet/eth_utils.c ethernet/eth_utils.h ipv6/ipv6.c ipv6/ipv6.h)
+target_link_libraries(app pthread)
