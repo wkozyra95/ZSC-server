@@ -1,14 +1,13 @@
 #ifndef ZSC_RUNNER_H
 #define ZSC_RUNNER_H
 
-
+#include <memory>
 #include "Device.h"
 
-enum L3protocol {IPv4, IPv6};
 
 class Runner {
 private:
-    Device *device;
+    std::shared_ptr<Device> device;
 public:
     void run();
     Runner();

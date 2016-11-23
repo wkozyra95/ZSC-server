@@ -6,6 +6,7 @@
 #include <net/if.h>
 #include <unistd.h>
 #include <linux/if_ether.h>
+#include <memory>
 
 #include "Device.h"
 #include "packets/RawFrame.h"
@@ -49,9 +50,9 @@ void Device::init() {
 
 }
 
-RawFrame * Device::listen() {
+std::shared_ptr<RawFrame> Device::listen() {
     ssize_t numbytes = recvfrom(socketfd, deviceBuffer, 1600, 0, NULL, NULL);
-    return new RawFrame(deviceBuffer, numbytes);
+    return std::make_shared<RawFrame>(deviceBuffer, numbytes);
 }
 
 Device::Device() {

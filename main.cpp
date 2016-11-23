@@ -1,8 +1,8 @@
-
+#include <memory>
 #include "Runner.h"
 
 int main(int argc, char* argv[]){
 
-    Runner *runner = new Runner();
+    std::shared_ptr<Runner> runner = std::make_shared<Runner>();
     runner->run();
 }

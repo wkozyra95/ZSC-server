@@ -1,7 +1,7 @@
 #ifndef ZSC_DEVICE_H
 #define ZSC_DEVICE_H
 
-
+#include <memory>
 #include "packets/RawFrame.h"
 
 class Device {
@@ -10,7 +10,7 @@ private:
     uint8_t deviceBuffer[1600];
     void init();
 public:
-    RawFrame * listen();
+    std::shared_ptr<RawFrame> listen();
 
     Device();
 };
