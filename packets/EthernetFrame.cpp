@@ -5,6 +5,7 @@
 #include "../Utils.h"
 
 #include "EthernetFrame.h"
+#include "IPv6Packet.h"
 
 void EthernetFrame::parse(uint8_t* frame, ssize_t size) {
     uint8_t * dest = frame;
@@ -29,16 +30,18 @@ EthernetFrame::EthernetFrame(uint8_t* frame, ssize_t ssize) {
 void EthernetFrame::handle(std::shared_ptr<State> state) {
     std::string type = Utils::hex_format_display(this->type, 2);
     if(type == "08:00:") {
-        printf("IPv4 packet\n");
-        displayFrameLong();
-        printf("\n");
+//        printf("IPv4 packet\n");
+//        displayFrameLong();
+//        printf("\n");
     } else if( type == "86:DD:") {
         printf("IPv6 packet\n");
         displayFrameLong();
+        auto fragment = std::make_shared<IPv6Packet>(payload, payloadSize);
+        fragment->handle(state);
         printf("\n");
     } else {
-        printf("Unknown packet\n");
-        displayFrameLong();
+//        printf("Unknown packet\n");
+//        displayFrameLong();
         printf("\n");
     }
 }
