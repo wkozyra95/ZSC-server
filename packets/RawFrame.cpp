@@ -1,7 +1,7 @@
 #include <cstring>
 #include <iostream>
+#include "../store/State.h"
 #include "RawFrame.h"
-#include "EthernetFrame.h"
 
 RawFrame::RawFrame(uint8_t *frame, ssize_t size) {
     this->frame = new uint8_t[size];
@@ -9,12 +9,6 @@ RawFrame::RawFrame(uint8_t *frame, ssize_t size) {
     this->size = size;
 }
 
-void RawFrame::handle() {
-    EthernetFrame* ethernetFrame = new EthernetFrame(this);
-    if(size <= 14){
-        std::cout << "Invalid Frame(to short)" << std::endl;
-        return;
-    }
-    ethernetFrame->handle();
+std::shared_ptr<EthernetFrame> RawFrame::handle(std::shared_ptr<State> state) {
+    return std::make_shared<EthernetFrame>(frame, size);
 }
-

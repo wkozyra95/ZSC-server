@@ -4,16 +4,19 @@
 
 #include <cstdint>
 #include <zconf.h>
-#include "AbstractPacket.h"
+#include <memory>
+#include "EthernetFrame.h"
+#include "../store/State.h"
 
-class RawFrame: public AbstractPacket {
-public:
+
+class RawFrame {
+private:
     uint8_t* frame;
     ssize_t size;
-
+public:
     RawFrame(uint8_t *frame, ssize_t size);
 
-    virtual void handle() override;
+    std::shared_ptr<EthernetFrame> handle(std::shared_ptr<State> state);
 };
 
 
