@@ -1,8 +1,8 @@
 #ifndef ZSC_DEVICE_H
 #define ZSC_DEVICE_H
 
-#include <memory>
-#include "packets/RawFrame.h"
+
+#include "../packets/RawFrame.h"
 
 class Device {
 private:

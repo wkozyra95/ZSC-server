@@ -2,14 +2,18 @@
 
 #include <memory>
 #include "Runner.h"
+#include "store/Device.h"
+#include "store/EthernetStore.h"
+#include "store/IPv6Store.h"
 
 void Runner::run() {
     for(int i = 0; i<10; i++) {
-        std::shared_ptr<RawFrame> frame = device->listen();
-        frame->handle();
-    }
-}
+        auto raw_frame = state->device->listen();
+        auto eth_frame = raw_frame->handle(state);
 
-Runner::Runner() {
-   device = std::make_shared<Device>();
+        eth_frame->handle(std::shared_ptr<State>());
+
+        //state->ipv6Store->handleAll();
+
+    }
 }

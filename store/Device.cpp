@@ -6,10 +6,8 @@
 #include <net/if.h>
 #include <unistd.h>
 #include <linux/if_ether.h>
-#include <memory>
 
 #include "Device.h"
-#include "packets/RawFrame.h"
 
 void Device::init() {
     const char* if_name = "eth0";

@@ -5,15 +5,20 @@ set(CMAKE_INSTALL_PREFIX ${CMAKE_SOURCE_DIR})
 set(CMAKE_C_COMPILER g++)
 set(CMAKE_C_FLAGS  "${CMAKE_C_FLAGS} -g -Wall")
 add_compile_options(-std=c++14)
+
 add_executable(
         app
         main.cpp
         Runner.cpp Runner.h
-        Device.cpp Device.h
         Utils.cpp Utils.h
-        packets/AbstractPacket.cpp packets/AbstractPacket.h
+
+        store/State.cpp store/State.h
+
         packets/RawFrame.cpp packets/RawFrame.h
         packets/EthernetFrame.cpp packets/EthernetFrame.h
-)
+        packets/IPv6Packet.cpp packets/IPv6Packet.h
 
-target_link_libraries(app pthread)
+        store/Device.cpp store/Device.h
+        store/EthernetStore.cpp store/EthernetStore.h
+        store/IPv6Store.cpp store/IPv6Store.h
+)

@@ -1,16 +1,16 @@
 #ifndef ZSC_RUNNER_H
 #define ZSC_RUNNER_H
 
-#include <memory>
-#include "Device.h"
 
+#include "store/State.h"
 
 class Runner {
 private:
-    std::shared_ptr<Device> device;
+    const std::shared_ptr<State> state = std::make_shared<State>();
 public:
     void run();
-    Runner();
+    Runner() {
+    };
 };
 
 

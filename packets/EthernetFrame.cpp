@@ -1,15 +1,17 @@
 #include <cstring>
 #include <iostream>
 #include <unordered_map>
+#include "../store/State.h"
+#include "../Utils.h"
+
 #include "EthernetFrame.h"
 
-
-void EthernetFrame::parse(RawFrame *frame) {
-    uint8_t * dest = frame->frame;
-    uint8_t * source = frame->frame + 6;
-    uint8_t * type = frame->frame + 12;
-    uint8_t * payload = frame->frame + 14;
-    ssize_t payload_length = frame->size - 14;
+void EthernetFrame::parse(uint8_t* frame, ssize_t size) {
+    uint8_t * dest = frame;
+    uint8_t * source = frame + 6;
+    uint8_t * type = frame + 12;
+    uint8_t * payload = frame + 14;
+    ssize_t payload_length = size - 14;
 
     memcpy(this->destination, dest, 6);
     memcpy(this->source, source, 6);
@@ -20,11 +22,11 @@ void EthernetFrame::parse(RawFrame *frame) {
     this->payloadSize = payload_length;
 }
 
-EthernetFrame::EthernetFrame(RawFrame *frame) {
-    parse(frame);
+EthernetFrame::EthernetFrame(uint8_t* frame, ssize_t ssize) {
+    parse(frame, ssize);
 }
 
-void EthernetFrame::handle() {
+void EthernetFrame::handle(std::shared_ptr<State> state) {
     std::string type = Utils::hex_format_display(this->type, 2);
     if(type == "08:00:") {
         printf("IPv4 packet\n");
