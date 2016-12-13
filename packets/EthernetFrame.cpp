@@ -1,7 +1,6 @@
 #include <cstring>
 #include <iostream>
 #include <unordered_map>
-#include "../store/State.h"
 #include "../Utils.h"
 
 #include "EthernetFrame.h"
@@ -26,6 +25,16 @@ void EthernetFrame::parse(uint8_t* frame, ssize_t size) {
 EthernetFrame::EthernetFrame(uint8_t* frame, ssize_t ssize) {
     parse(frame, ssize);
 }
+
+EthernetFrame::EthernetFrame(uint8_t *destination, uint16_t type, uint8_t *payload, ssize_t payloadSize) {
+
+}
+
+
+void EthernetFrame::respond(std::shared_ptr<State> state) {
+
+}
+
 
 void EthernetFrame::handle(std::shared_ptr<State> state) {
     std::string type = Utils::hex_format_display(this->type, 2);
@@ -154,3 +163,4 @@ std::string EthernetFrame::detectType(std::string basic_string) {
     }
     return "";
 }
+

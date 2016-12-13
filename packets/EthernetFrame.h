@@ -1,7 +1,6 @@
 #ifndef ZSC_ETHERNETFRAME_H
 #define ZSC_ETHERNETFRAME_H
 
-#include <stdint.h>
 #include "../store/State.h"
 
 
@@ -17,8 +16,15 @@ private:
     std::string detectType(std::string basic_string);
 public:
     EthernetFrame(uint8_t* frame, ssize_t ssize);
+    EthernetFrame(
+            uint8_t* destination,
+            uint16_t type,
+            uint8_t* payload,
+            ssize_t payloadSize
+    );
     void parse(uint8_t* frame, ssize_t ssize);
     void handle(std::shared_ptr<State> state);
+    void respond(std::shared_ptr<State> state);
     void displayFrame();
     void displayFrameLong();
 };

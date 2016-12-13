@@ -2,10 +2,14 @@
 #define ZSC_IPV6STORE_H
 
 
+#include <cstdint>
 
 class IPv6Store{
-
+    uint8_t* myIP;
 public:
+    IPv6Store();
+
+    uint8_t* getMyIp();
 };
 
 

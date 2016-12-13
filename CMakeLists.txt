@@ -21,4 +21,4 @@ add_executable(
         store/Device.cpp store/Device.h
         store/EthernetStore.cpp store/EthernetStore.h
         store/IPv6Store.cpp store/IPv6Store.h
-)
+        packets/IcmpPacket.cpp packets/IcmpPacket.h)

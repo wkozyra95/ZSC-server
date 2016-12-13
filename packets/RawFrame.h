@@ -2,9 +2,6 @@
 #define ZSC_RAWFRAME_H
 
 
-#include <cstdint>
-#include <zconf.h>
-#include <memory>
 #include "EthernetFrame.h"
 #include "../store/State.h"
 

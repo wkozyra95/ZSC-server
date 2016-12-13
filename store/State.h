@@ -1,7 +1,6 @@
 #ifndef ZSC_STATE_H
 #define ZSC_STATE_H
 
-#include <iostream>
 #include <memory>
 
 class EthernetStore;

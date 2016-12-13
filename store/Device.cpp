@@ -54,5 +54,11 @@ std::shared_ptr<RawFrame> Device::listen() {
 }
 
 Device::Device() {
+    uint8_t mac[] = {0x44, 0x8A, 0x5b, 0xef, 0x70, 0x24};
+    memcpy(MAC, mac, 6);
     init();
+}
+
+uint8_t *Device::getMAC() {
+    return MAC;
 }

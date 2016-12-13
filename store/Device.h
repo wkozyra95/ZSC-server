@@ -7,10 +7,12 @@
 class Device {
 private:
     int socketfd;
+    uint8_t MAC[6];
     uint8_t deviceBuffer[1600];
     void init();
 public:
     std::shared_ptr<RawFrame> listen();
+    uint8_t* getMAC();
 
     Device();
 };
