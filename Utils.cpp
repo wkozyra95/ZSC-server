@@ -21,27 +21,28 @@ std::string Utils::decimal_format_display(uint8_t *data, ssize_t size) {
     return str;
 }
 
-uint16_t checksum (uint8_t data[], int len)
-{
-    uint16_t *addr = (uint16_t*)data;
-    int len16 = (len + 1) / 2;
-    uint32_t sum = 0;
-    uint16_t result = 0;
+uint16_t Utils::checksum(uint8_t* buf, int size) {
 
-    while (len16 > 1) {
-        sum += *(addr++);
-        len16 -= 2;
+    unsigned sum = 0;
+    int i;
+
+    /* Accumulate checksum */
+    for (i = 0; i < size - 1; i += 2)
+    {
+        unsigned short word16 = *(unsigned short *) &buf[i];
+        sum += word16;
     }
 
-    if (len16 > 0) {
-        sum += *(uint8_t *) addr;
+    /* Handle odd-sized case */
+    if (size & 1)
+    {
+        unsigned short word16 = (unsigned char) buf[i];
+        sum += word16;
     }
 
-    while (sum >> 16) {
-        sum = (sum & 0xffff) + (sum >> 16);
-    }
+    /* Fold to get the ones-complement result */
+    while (sum >> 16) sum = (sum & 0xFFFF)+(sum >> 16);
 
-    result = ~sum;
-
-    return (result);
+    /* Invert to get the negative in ones-complement arithmetic */
+    return (uint16_t) ~sum;
 }
