@@ -22,9 +22,10 @@ public:
             uint8_t* payload,
             ssize_t payloadSize
     );
-    void parse(uint8_t* frame, ssize_t ssize);
     void handle(std::shared_ptr<State> state);
     void respond(std::shared_ptr<State> state);
+
+    void parse(uint8_t* frame, ssize_t ssize);
     void displayFrame();
     void displayFrameLong();
 };

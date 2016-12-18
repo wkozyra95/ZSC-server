@@ -14,6 +14,7 @@ public:
     RawFrame(uint8_t *frame, ssize_t size);
 
     std::shared_ptr<EthernetFrame> handle(std::shared_ptr<State> state);
+    void send(std::shared_ptr<State> state);
 };
 
 

@@ -46,6 +46,7 @@ void IPv6Packet::respond(std::shared_ptr<State> store) {
     memcpy(ethernet_payload + 24, destination, 16);
 
     memcpy(ethernet_payload + 40, payload, payload_length);
+    std::cout << "end";
 
     auto ethernetFrame = std::make_shared<EthernetFrame>(
             store->ethernetStore->getMacForIP(destination),
@@ -63,6 +64,8 @@ IPv6Packet::IPv6Packet(uint8_t* packet, ssize_t size) {
 IPv6Packet::IPv6Packet(
         uint8_t* destination, uint8_t type, uint8_t traffic_class, 
         uint8_t* flow_label, uint8_t* payload, uint16_t payload_length) {
+    std::cout << "start" << std::endl;
+
     version = 6;
     this->traffic_class = traffic_class;
     memcpy(this->flow_label, flow_label, 3);
@@ -71,7 +74,10 @@ IPv6Packet::IPv6Packet(
     this->ttl = 255;
 
     memcpy(this->destination, destination, 16);
+    this->payload = new uint8_t[payload_length];
     memcpy(this->payload, payload, payload_length);
+    std::cout << "start" << std::endl;
+
 }
         
 void IPv6Packet::parse(uint8_t *frame, ssize_t size) {

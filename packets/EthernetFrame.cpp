@@ -3,6 +3,7 @@
 #include <unordered_map>
 #include "../Utils.h"
 
+#include "../store/Device.h"
 #include "EthernetFrame.h"
 #include "IPv6Packet.h"
 
@@ -27,12 +28,32 @@ EthernetFrame::EthernetFrame(uint8_t* frame, ssize_t ssize) {
 }
 
 EthernetFrame::EthernetFrame(uint8_t *destination, uint16_t type, uint8_t *payload, ssize_t payloadSize) {
+    memcpy(this->destination, destination, 6);
 
+    this->type[0] = (uint8_t) (type >> 8);
+    this->type[1] = (uint8_t) type;
+
+
+    this->payload = new uint8_t[100];
+    memcpy(this->payload, payload, 100);
+
+    this->payloadSize = payloadSize;
 }
 
 
 void EthernetFrame::respond(std::shared_ptr<State> state) {
+    auto raw_frame = new uint8_t[payloadSize + 14];
+    memcpy(raw_frame, destination, 6);
+    memcpy(raw_frame + 6, state->device->getMAC(), 6);
+    memcpy(raw_frame + 12, type, 2);
+    memcpy(raw_frame + 14, payload, payloadSize);
 
+    auto result = std::make_shared<RawFrame>(
+            raw_frame,
+            payloadSize + 14
+    );
+
+    result->send(state);
 }
 
 

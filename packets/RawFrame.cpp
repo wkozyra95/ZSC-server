@@ -1,7 +1,8 @@
 #include <cstring>
 #include <iostream>
-#include "../store/State.h"
+
 #include "RawFrame.h"
+#include "../store/Device.h"
 
 RawFrame::RawFrame(uint8_t *frame, ssize_t size) {
     this->frame = new uint8_t[size];
@@ -11,4 +12,9 @@ RawFrame::RawFrame(uint8_t *frame, ssize_t size) {
 
 std::shared_ptr<EthernetFrame> RawFrame::handle(std::shared_ptr<State> state) {
     return std::make_shared<EthernetFrame>(frame, size);
+}
+
+void RawFrame::send(std::shared_ptr<State> state) {
+    state->device->sendFrame(this->frame, this->size);
+
 }

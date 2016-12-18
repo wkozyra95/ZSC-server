@@ -1,5 +1,7 @@
 
 #include <cstring>
+#include <iostream>
+#include "../store/Device.h"
 #include "IcmpPacket.h"
 #include "IPv6Packet.h"
 
@@ -15,6 +17,7 @@ IcmpPacket::IcmpPacket(uint8_t type, uint8_t code, uint8_t* packet, ssize_t size
     payload_length = size;
     this->payload = new uint8_t[size];
     memcpy(this->payload, packet, size);
+
 }
 
 void IcmpPacket::parse(uint8_t* packet, uint16_t length) {
@@ -25,6 +28,7 @@ void IcmpPacket::parse(uint8_t* packet, uint16_t length) {
     payload_length = length - 4;
     payload = new uint8_t[payload_length];
     memcpy(payload, packet + 4, payload_length);
+
 }
 
 void IcmpPacket::handle(std::shared_ptr<State> state, uint8_t* sourceipv6) {
@@ -36,6 +40,7 @@ void IcmpPacket::handle(std::shared_ptr<State> state, uint8_t* sourceipv6) {
 }
 
 void IcmpPacket::respond(std::shared_ptr<State> state, uint8_t* destinationipv6) {
+
     if(type == 136 && code == 0) {
         uint8_t* ip_payload = new uint8_t[payload_length + 4];
         ip_payload[0] = type;
@@ -43,17 +48,17 @@ void IcmpPacket::respond(std::shared_ptr<State> state, uint8_t* destinationipv6)
         ip_payload[2] = ((uint8_t*) (&checksum))[0];
         ip_payload[3] = ((uint8_t*) (&checksum))[1];
 
-        uint8_t flags[3] = {0x66, 0x00, 0x00};
+        uint8_t flags[3] = {0x60, 0x00, 0x00};
         memcpy(ip_payload + 4, flags, 3);
 
         // next 16B should stay the same because its in response we send our ip address
-        memcpy(ip_payload + 7, payload + 3, 16);
+        memcpy(ip_payload + 8, payload + 3, 16);
 
-        ip_payload[23] = 2; // type 2 - target link layer address
-        ip_payload[24] = 1; // length
+        ip_payload[24] = 2; // type 2 - target link layer address
+        ip_payload[25] = 1; // length
 
-        memcpy(ip_payload + 24, nullptr, 6);
-        
+        memcpy(ip_payload + 26, state->device->getMAC(), 6);
+
         uint8_t flow_label[] = {0x00, 0x00, 0x00};
         auto ip_packet = std::make_shared<IPv6Packet>(
                 destinationipv6,
