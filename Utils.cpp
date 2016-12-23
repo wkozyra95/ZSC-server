@@ -1,5 +1,5 @@
-#include <string>
 #include "Utils.h"
+#include <iostream>
 
 std::string Utils::hex_format_display(uint8_t *data, ssize_t size) {
     char* dataDisplay = new char[size*3];
@@ -45,4 +45,31 @@ uint16_t Utils::checksum(uint8_t* buf, int size) {
 
     /* Invert to get the negative in ones-complement arithmetic */
     return (uint16_t) ~sum;
+};
+
+std::shared_ptr<RawFrame> Utils::hexToFrame(std::string number) {
+    if(number.length() % 2 != 0) {
+        std::cout << "invalid frame string" << std::endl;
+    }
+
+    int frame_length = (number.length() + 1)/2;
+    auto frame = new uint8_t[frame_length];
+    
+    auto getNum = [](char i) {
+        if( i>='0' && i<='9'){
+            return i - '0'; 
+        } else if ( i>= 'A' && i<='F') {
+            return 10 + i - 'A';
+        } else if( i>= 'a' && i<='f') {
+            return 10 + i - 'a';
+        }
+        std::cout << "Invalid number" << std::endl;
+        return 0;
+    };
+
+    for (int i = 0; i < number.length(); i+=2) {
+        frame[i/2] = getNum(number[i])*16 + getNum(number[i+1]);
+    }     
+
+    return std::make_shared<RawFrame>(frame, frame_length);
 }

@@ -64,15 +64,15 @@ void EthernetFrame::handle(std::shared_ptr<State> state) {
 //        displayFrameLong();
 //        printf("\n");
     } else if( type == "86:DD:") {
-        printf("IPv6 packet\n");
-        displayFrameLong();
+        //printf("IPv6 packet\n");
+        //displayFrameLong();
         auto fragment = std::make_shared<IPv6Packet>(payload, payloadSize);
         fragment->handle(state);
-        printf("\n");
+        //printf("\n");
     } else {
 //        printf("Unknown packet\n");
 //        displayFrameLong();
-        printf("\n");
+        //printf("\n");
     }
 }
 

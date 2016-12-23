@@ -44,12 +44,12 @@ void IcmpPacket::handle(std::shared_ptr<State> state, uint8_t* sourceipv6) {
 void IcmpPacket::respond(std::shared_ptr<State> state, uint8_t* destinationipv6) {
 
     if(type == 136 && code == 0) {
-        uint8_t* ip_payload = new uint8_t[payload_length + 4];
+        uint8_t *ip_payload = new uint8_t[payload_length + 4];
         ip_payload[0] = type;
         ip_payload[1] = code;
 
-        ip_payload[2] = ((uint8_t*) (&checksum))[0];
-        ip_payload[3] = ((uint8_t*) (&checksum))[1];
+        ip_payload[2] = ((uint8_t *) (&checksum))[0];
+        ip_payload[3] = ((uint8_t *) (&checksum))[1];
 
 
         uint8_t flags[3] = {0x60, 0x00, 0x00};
@@ -63,20 +63,21 @@ void IcmpPacket::respond(std::shared_ptr<State> state, uint8_t* destinationipv6)
 
         memcpy(ip_payload + 26, state->device->getMAC(), 6);
 
-        uint8_t* checksum_base = new uint8_t[payload_length + 4 + 40];
-        memcpy(checksum_base, state->ipv6Store->getMyIp(), 16);
-        memcpy(checksum_base + 16, destinationipv6, 16);
-        checksum_base[32] = 0;
-        checksum_base[33] = 0;
-        checksum_base[34] = (uint8_t) ((payload_length + 4) / 0xFF);
-        checksum_base[35] = (uint8_t) ((payload_length + 4) % 0xFF);
-        memset(checksum_base + 36, 0, 3);
-        checksum_base[39] = 58;
-        memcpy(checksum_base + 40, ip_payload, (size_t) (payload_length + 4));
-        std::cout <<
-                  Utils::hex_format_display(checksum_base, payload_length + 44) <<
-                std:: endl;
-        checksum = Utils::checksum(checksum_base, (int) (payload_length + 44));
+        {
+            uint8_t *checksum_base = new uint8_t[payload_length + 4 + 40];
+            memcpy(checksum_base, state->ipv6Store->getMyIp(), 16);
+            memcpy(checksum_base + 16, destinationipv6, 16);
+            checksum_base[32] = 0;
+            checksum_base[33] = 0;
+            checksum_base[34] = (uint8_t) ((payload_length + 4) / 0xFF);
+            checksum_base[35] = (uint8_t) ((payload_length + 4) % 0xFF);
+            memset(checksum_base + 36, 0, 3);
+            checksum_base[39] = 58;
+            memcpy(checksum_base + 40, ip_payload, (size_t) (payload_length + 4));
+
+            checksum = Utils::checksum(checksum_base, (int) (payload_length + 44));
+            delete checksum_base;
+        }
 
         ip_payload[2] = ((uint8_t*) (&checksum))[0];
         ip_payload[3] = ((uint8_t*) (&checksum))[1];

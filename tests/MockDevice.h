@@ -1,3 +1,4 @@
+
 #ifndef ZSC_DEVICE_H
 #define ZSC_DEVICE_H
 
@@ -6,21 +7,16 @@
 
 class Device {
 private:
-    struct ifreq* ifreq;
-    struct ifreq* ifidx;
-    struct sockaddr_ll* socket_address;
-    int socketfd;
-    uint8_t MAC[6];
-    uint8_t deviceBuffer[1600];
-    void init();
+    std::vector<std::shared_ptr<RawFrame> > input;
+    std::vector<std::shared_ptr<RawFrame> > output;
 public:
     std::shared_ptr<RawFrame> listen();
     void sendFrame(uint8_t* payload, ssize_t payloadSize);
-    std::vector<std::shared_ptr<RawFrame> > getReceivedFrames();
     uint8_t* getMAC();
+    std::vector<std::shared_ptr<RawFrame> > getReceivedFrames();
 
     Device();
+    Device(std::vector<std::shared_ptr<RawFrame>> input);
 };
-
 
 #endif //ZSC_DEVICE_H

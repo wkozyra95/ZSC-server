@@ -21,4 +21,28 @@ add_executable(
         store/Device.cpp store/Device.h
         store/EthernetStore.cpp store/EthernetStore.h
         store/IPv6Store.cpp store/IPv6Store.h
-        packets/IcmpPacket.cpp packets/IcmpPacket.h)
+        packets/IcmpPacket.cpp packets/IcmpPacket.h
+        packets/TCPPacket.cpp packets/TCPPacket.h
+)
+
+
+add_executable(
+        tests
+        tests/tests.cpp tests/Test.cpp tests/Test.h
+        tests/MockRunner.cpp tests/MockRunner.h
+        tests/MockDevice.cpp tests/MockDevice.h
+
+        Utils.cpp Utils.h
+
+        store/State.cpp store/State.h
+
+        packets/RawFrame.cpp packets/RawFrame.h
+        packets/EthernetFrame.cpp packets/EthernetFrame.h
+        packets/IPv6Packet.cpp packets/IPv6Packet.h
+
+        store/EthernetStore.cpp store/EthernetStore.h
+        store/IPv6Store.cpp store/IPv6Store.h
+        packets/IcmpPacket.cpp packets/IcmpPacket.h
+        packets/TCPPacket.cpp packets/TCPPacket.h
+
+)

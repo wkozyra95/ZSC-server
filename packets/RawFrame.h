@@ -15,6 +15,7 @@ public:
 
     std::shared_ptr<EthernetFrame> handle(std::shared_ptr<State> state);
     void send(std::shared_ptr<State> state);
+    void display();
 };
 
 
