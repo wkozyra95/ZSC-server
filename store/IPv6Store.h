@@ -8,6 +8,7 @@ class IPv6Store{
     uint8_t* myIP;
 public:
     IPv6Store();
+    IPv6Store(uint8_t* ip);
 
     uint8_t* getMyIp();
 };

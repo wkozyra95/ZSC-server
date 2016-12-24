@@ -25,7 +25,7 @@ public:
                uint16_t payload_length);
     IPv6Packet(uint8_t* packet, ssize_t size);
 
-    void handle(std::shared_ptr<State> store);
+    void handle(std::shared_ptr<State> store, uint8_t* sourceMAC);
     void respond(std::shared_ptr<State> store);
 
     void parse(uint8_t* packet, ssize_t size);

@@ -19,3 +19,10 @@ IPv6Store::IPv6Store() {
     myIP = new uint8_t[16];
     memcpy(myIP, ip, 16);
 }
+
+IPv6Store::IPv6Store(uint8_t* ip) {
+    myIP = new uint8_t[16];
+    memcpy(myIP, ip, 16);
+}
+
+

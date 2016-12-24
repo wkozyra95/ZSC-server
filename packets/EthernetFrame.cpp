@@ -67,7 +67,7 @@ void EthernetFrame::handle(std::shared_ptr<State> state) {
         //printf("IPv6 packet\n");
         //displayFrameLong();
         auto fragment = std::make_shared<IPv6Packet>(payload, payloadSize);
-        fragment->handle(state);
+        fragment->handle(state, this->source);
         //printf("\n");
     } else {
 //        printf("Unknown packet\n");

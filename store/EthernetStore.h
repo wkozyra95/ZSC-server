@@ -5,12 +5,13 @@
 
 #include <cstdint>
 #include <unordered_map>
+#include <vector>
 
 class EthernetStore {
-    uint8_t* mapping;
+    std::unordered_map<std::string, std::vector<uint8_t> > mapping; // (ip, mac)
 public:
-    EthernetStore();
-
+    EthernetStore(){};
+    void registerMAC(uint8_t* ip, uint8_t* mac);
     uint8_t* getMacForIP(uint8_t* ip);
 };
 
