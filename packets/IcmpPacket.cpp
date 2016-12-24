@@ -52,11 +52,11 @@ void IcmpPacket::respond(std::shared_ptr<State> state, uint8_t* destinationipv6)
         ip_payload[3] = ((uint8_t *) (&checksum))[1];
 
 
-        uint8_t flags[3] = {0x60, 0x00, 0x00};
-        memcpy(ip_payload + 4, flags, 3);
+        uint8_t flags[4] = {0x60, 0x00, 0x00, 0x00};
+        memcpy(ip_payload + 4, flags, 4);
 
         // next 16B should stay the same because its in response we send our ip address
-        memcpy(ip_payload + 8, payload + 3, 16);
+        memcpy(ip_payload + 8, payload + 4, 16);
 
         ip_payload[24] = 2; // type 2 - target link layer address
         ip_payload[25] = 1; // length

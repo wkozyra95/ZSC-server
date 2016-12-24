@@ -33,7 +33,7 @@ void IPv6Packet::respond(std::shared_ptr<State> store) {
     ethernet_payload[3] = flow_label[2];
     
     // payload_length
-    ethernet_payload[4] = (uint8_t) (0xFF & payload_length);
+    ethernet_payload[4] = (uint8_t) payload_length >> 8;
     ethernet_payload[5] = (uint8_t) payload_length ;
 
     // next_header

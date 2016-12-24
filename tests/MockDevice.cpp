@@ -26,7 +26,7 @@ std::vector<std::shared_ptr<RawFrame> > Device::getReceivedFrames() {
 }
 
 uint8_t* Device::getMAC() {
-    uint8_t mac[] = { 0x11, 0x22, 0x33, 0x44, 0x55, 0x66 };
+    uint8_t mac[] = { 0x10, 0x22, 0x33, 0x44, 0x55, 0x66 };
     auto result = new uint8_t[6];
     memcpy(result, mac, 6);
     return result;

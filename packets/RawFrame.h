@@ -8,9 +8,9 @@
 
 class RawFrame {
 private:
+public:
     uint8_t* frame;
     ssize_t size;
-public:
     RawFrame(uint8_t *frame, ssize_t size);
 
     std::shared_ptr<EthernetFrame> handle(std::shared_ptr<State> state);

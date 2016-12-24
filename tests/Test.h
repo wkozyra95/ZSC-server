@@ -14,7 +14,7 @@ public:
     Test(std::vector<std::shared_ptr<RawFrame> > input, 
             std::vector<std::shared_ptr<RawFrame> > output);
     void runTest();
-    void runChecksResults();
+    void runChecksResults(std::vector<std::shared_ptr<RawFrame> > result);
 };
 
 
