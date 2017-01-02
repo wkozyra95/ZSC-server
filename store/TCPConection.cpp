@@ -12,7 +12,12 @@ TCPConection::TCPConection(
     this->sender_port = sender_port;
 
     this->state = state;
+    this->ack_index = 0;
+    this->seq_number = 0;
+    this->ack_seq_number = 0;
 }
+
+
 
 
 

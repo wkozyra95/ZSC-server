@@ -2,6 +2,7 @@
 #define ZSC_TCPCONNECTION_H
 
 #include <cstdint>
+#include <vector>
 
 enum TCPState {  
     LISTEN = 1,
@@ -18,14 +19,18 @@ enum TCPState {
 };
 
 class TCPConection {
-    private:
+    public:
         uint16_t sender_port;
         uint16_t receiver_port;
         uint8_t* ip;
-        TCPState state;       
-    public:
+        TCPState state;
+        uint32_t initial_seq_sender;
+        uint32_t initial_seq_receiver;
+        uint32_t ack_index; // max index received ack
+        uint32_t seq_number; // max index send not necessary ack
+        uint32_t ack_seq_number;
+        std::vector<uint8_t> payload;
         TCPConection(uint8_t* ip, uint16_t sender_port, uint16_t receiver_port, TCPState state);
-        void changeState(TCPState state);
 };
 
 #endif // ZSC_TCPCONNECTION_H

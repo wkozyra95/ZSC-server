@@ -1,5 +1,8 @@
 #include "TCPPacket.h"
 #include <cstring>
+#include <cstdlib>
+#include <iostream>
+#include "../store/TCPStore.h"
 
 TCPPacket::TCPPacket(uint8_t *packet, ssize_t size) {}
 
@@ -12,7 +15,6 @@ TCPPacket::TCPPacket(
         uint8_t flags,
         uint8_t NSflag,
         uint16_t window_size,
-        uint16_t checksum,
         uint16_t urgent_pointer,
         uint8_t* payload,
         ssize_t payload_length
@@ -32,7 +34,6 @@ TCPPacket::TCPPacket(
     this->isFIN = (flags & FIN) != 0;
     this->isNS = NSflag != 0;
     this->window_size = window_size;
-    this->checksum = checksum;
     this->urgent_pointer = urgent_pointer;
 
     this->payload = new uint8_t[payload_length];
@@ -79,14 +80,57 @@ void TCPPacket::parse(uint8_t *packet, ssize_t size) {
 }
 
 void TCPPacket::handle(std::shared_ptr<State> state, uint8_t* source_ip) {
-    
-
+    auto connection = state->tcpStore->getConnection(source_ip, source_port, destination_port);
+    if( this->isSYN ) { // listen for connection request
+        connection->state = LISTEN;
+        connection->initial_seq_sender = this->seq_number;
+        connection->initial_seq_receiver = 0x15141312;
+        connection->seq_number = connection->initial_seq_receiver + 1 ; 
+        connection->ack_seq_number = connection->initial_seq_receiver;        
+        //accept connection 
+        std::make_shared<TCPPacket>(
+                this->destination_port,
+                this->source_port,
+                connection->initial_seq_receiver,
+                this->seq_number + 1, // increased by 1
+                20,
+                SYN | ACK,
+                0,
+                1000,
+                0x0000,
+                nullptr,
+                0
+                )->respond(state, source_ip);
+    } else if( this->isACK && connection->state == LISTEN ) { // listen for ack of
+        connection->state = ESTABLISHED;
+        if(this->seq_number != connection->ack_seq_number) {
+            std::cout << "ERROR: MISSING PREVIOUS ACK retransmit" << std::endl;
+        }
+        connection->ack_seq_number = this->seq_number + this->payload_length;
+        connection->ack_index = 0;
+    } else if (connection->state == ESTABLISHED && this->isACK && this->isPSH) {
+        
+        std::make_shared<TCPPacket>( //send ack
+                this->destination_port,
+                this->source_port,
+                connection->seq_number,
+                this->seq_number + payload_length,
+                20,
+                ACK,
+                0,
+                1000,
+                0x0000,
+                nullptr,
+                0
+                )->respond(state, source_ip);
+    }
 
 }
 
 void TCPPacket::respond(std::shared_ptr<State> state, uint8_t* destination_ip) {
 
 }
+
 
 
 

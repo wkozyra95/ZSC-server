@@ -55,19 +55,15 @@ class TCPPacket {
                 uint8_t flags,
                 uint8_t NSflag,
                 uint16_t window_size,
-                uint16_t checksum,
                 uint16_t urgent_pointer,
                 uint8_t* payload,
                 ssize_t payload_length
                 );
 
-
-
-            void handle(std::shared_ptr<State> state, uint8_t* source_ip);
+        void handle(std::shared_ptr<State> state, uint8_t* source_ip);
         void respond(std::shared_ptr<State> state, uint8_t* destination_ip);
 
         void parse(uint8_t* packet, ssize_t size);
-
 };
 
 
