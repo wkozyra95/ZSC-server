@@ -45,11 +45,12 @@ int main() {
                                     + "0" //reserved + NS
                                     + "02" // syn flag set
                                     + "7080" //window size
-                                    + "todo" //checksum
+                                    + "63cd" //checksum
                                     + "0000" //urgent pointer
                                     + "00000000000000000000" //empty options
                                      ));
-
+    //for checksum calculation
+    //20010db80000000000000000c0ca1eafff0200000000000000000001ffca1eae000628c435001611110000a00270800000000000000000000000000000
     out2.push_back(Utils::hexToFrame(empty
                                      + "665544332211"
                                      + "3333ffca1eaf"
@@ -66,12 +67,36 @@ int main() {
                                      + "1112"
                                      + "a"
                                      + "0"
-                                     + "12" //syn and flag set
+                                     + "12" //syn and ack flag set
                                      + "6f90"
-                                     + "todo" //checksum
+                                     + "5278" //checksum
                                      + "0000" // urgent pointer
                                      + "00000000000000000000" //empty options
                                       ));
+    //ff0200000000000000000001ffca1eae20010db80000000000000000c0ca1eaf0006280016c43512341112a0126f900000000000000000000000000000
+    in2.push_back(Utils::hexToFrame(empty
+                                    + "3333ffca1eaf" //destination
+                                    + "665544332211" //source
+                                    + "86dd" //type (ipv6)
+                                    + "600000" //version and flow label
+                                    + "0028" //payload length
+                                    + "06" // next header (tcp)
+                                    + "40" //hop limit
+                                    + "20010db80000000000000000c0ca1eaf" //source
+                                    + "ff0200000000000000000001ffca1eae" //destination
+                                    + "c435" //source port
+                                    + "0016" //destination port
+                                    + "1112" //sequence number
+                                    + "1235" //acknowledgement number
+                                    + "a" //header length
+                                    + "0" //reserved + NS
+                                    + "10" // ack flag set
+                                    + "7080" //window size
+                                    + "5189" //checksum
+                                    + "0000" //urgent pointer
+                                    + "00000000000000000000" //empty options
+    ));
+    //20010db80000000000000000c0ca1eafff0200000000000000000001ffca1eae000628c435001611121235a01070800000000000000000000000000000
 
     auto test2 = new Test(in2, out2);
     test2->runTest();
