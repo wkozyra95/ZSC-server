@@ -5,9 +5,11 @@
 #include "../Utils.h"
 #include "../store/EthernetStore.h"
 #include "../store/IPv6Store.h"
+#include "../store/TCPStore.h"
 #include "IcmpPacket.h"
 #include "IPv6Packet.h"
 #include "EthernetFrame.h"
+#include "TCPPacket.h"
 
 void IPv6Packet::handle(std::shared_ptr<State> store, uint8_t* mac) {
     store->ethernetStore->registerMAC(source, mac);
@@ -16,6 +18,7 @@ void IPv6Packet::handle(std::shared_ptr<State> store, uint8_t* mac) {
        std::make_shared<IcmpPacket>(payload, payload_length)->handle(store, source);
     }
     if(next_header == 6){
+        std::make_shared<TCPPacket>(this->payload, this->payload_length)->handle(store, source);
         std::cout << "\ntcp\n" << std::endl;
     }
 }

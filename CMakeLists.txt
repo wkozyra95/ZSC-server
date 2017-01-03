@@ -17,12 +17,13 @@ add_executable(
         packets/RawFrame.cpp packets/RawFrame.h
         packets/EthernetFrame.cpp packets/EthernetFrame.h
         packets/IPv6Packet.cpp packets/IPv6Packet.h
+        packets/IcmpPacket.cpp packets/IcmpPacket.h
+        packets/TCPPacket.cpp packets/TCPPacket.h
 
         store/Device.cpp store/Device.h
         store/EthernetStore.cpp store/EthernetStore.h
         store/IPv6Store.cpp store/IPv6Store.h
-        packets/IcmpPacket.cpp packets/IcmpPacket.h
-        packets/TCPPacket.cpp packets/TCPPacket.h
+        store/TCPStore.cpp store/TCPStore.h
 )
 
 
@@ -39,10 +40,11 @@ add_executable(
         packets/RawFrame.cpp packets/RawFrame.h
         packets/EthernetFrame.cpp packets/EthernetFrame.h
         packets/IPv6Packet.cpp packets/IPv6Packet.h
+        packets/IcmpPacket.cpp packets/IcmpPacket.h
+        packets/TCPPacket.cpp packets/TCPPacket.h
 
         store/EthernetStore.cpp store/EthernetStore.h
         store/IPv6Store.cpp store/IPv6Store.h
-        packets/IcmpPacket.cpp packets/IcmpPacket.h
-        packets/TCPPacket.cpp packets/TCPPacket.h
+        store/TCPStore.cpp store/TCPStore.h
 
 )

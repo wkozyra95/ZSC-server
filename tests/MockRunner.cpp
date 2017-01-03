@@ -4,6 +4,7 @@
 #include "../store/State.h"
 #include "../store/EthernetStore.h"
 #include "../store/IPv6Store.h"
+#include "../store/TCPStore.h"
 #include "./MockDevice.h"
 #include <vector>
 #include <iostream>
@@ -12,7 +13,8 @@ MockRunner::MockRunner(std::shared_ptr<Device> device) {
     this->state = std::make_shared<State>(
         device,
         std::make_shared<EthernetStore>(),
-        std::make_shared<IPv6Store>()
+        std::make_shared<IPv6Store>(),
+        std::make_shared<TCPStore>()
     );
 };
 

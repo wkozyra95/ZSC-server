@@ -13,7 +13,8 @@ class TCPStore {
             std::shared_ptr<TCPConection>
             > mapping;
     public:
-        void getConnection(uint8_t* ip, uint16_t port);
+        std::shared_ptr<TCPConection> getConnection(
+                uint8_t* ip, uint16_t port, uint16_t receiver_port);
         void createConnection(uint8_t*ip, uint16_t port);
 
 };
