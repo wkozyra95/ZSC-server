@@ -21,6 +21,7 @@ void Test::runTest() {
 }
 
 void Test::runChecksResults(std::vector<std::shared_ptr<RawFrame> > result) {
+    bool testResult = true; // test successful
     int min_size = result.size()>output.size() ? output.size() : result.size();
     
     for(int i = 0; i< min_size ; i++) {
@@ -28,17 +29,25 @@ void Test::runChecksResults(std::vector<std::shared_ptr<RawFrame> > result) {
         auto received = Utils::hex_format_display(result[i]->frame, result[i]->size);
         if(expected.compare(received) != 0 ) {
             std::cout << "e: " + expected << std::endl << "r: " + received << std::endl << std::endl;
+            testResult = false;
         }
     }
     if(result.size() >  output.size()) {
-        std::cout<< "Received aditional frames" << std::endl;
+        std::cout<< "Received additional frames" << std::endl;
         for(int i = min_size ; i< result.size(); i++)
             std::cout << Utils::hex_format_display(result[i]->frame, result[i]->size) << std::endl;
+            testResult = false;
     }
     
     if(result.size() < output.size()) {
-        std::cout<< "Missing frames frames" << std::endl;
+        std::cout<< "Missing frames" << std::endl;
         for(int i = min_size; i< output.size(); i++)
             std::cout << Utils::hex_format_display(output[i]->frame, output[i]->size) << std::endl;
+            testResult = false;
+    }
+
+    if(testResult)
+    {
+        std::cout << "Test completed successfully" << std::endl;
     }
 }
