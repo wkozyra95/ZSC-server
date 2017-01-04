@@ -3,22 +3,30 @@
 #include "../packets/RawFrame.h"
 #include "../Utils.h"
 #include <iostream>
+#include <algorithm>
 
 int main() {
+    std::string myMAC("102233445566");
+    std::string myIP("20010db80000000000000000c0ca1eae");
+    std::string myPort("2332");
+    std::string otherMAC("665544332211");
+    std::string otherIP("20010db80000000000000000c0ca1eaf");
+    std::string otherPort("2442");
+
     std::string empty = "";
     std::vector<std::shared_ptr<RawFrame> > in1;
 
     //ICMP
     std::cout << "TEST: ICMP" << std::endl;
     in1.push_back(Utils::hexToFrame(empty +
-                                    "3333ffca1eaf"+"665544332211"+"86dd" +
-                                    "6000000000203aff"+"20010db80000000000000000c0ca1eaf"+"ff0200000000000000000001ffca1eae" +
-                                    "87002f2300000000"+"20010db80000000000000000c0ca1eae"+"0101"+"665544332211"));
+                "3333ffca1eaf"+otherMAC+"86dd" +
+                "6000000000203aff"+otherIP+"ff0200000000000000000001ffca1eae" +
+                "87002f2300000000"+myIP+"0101"+otherMAC));
     std::vector<std::shared_ptr<RawFrame> > out1;
     out1.push_back(Utils::hexToFrame(empty +
-                                     "665544332211"+"102233445566"+"86dd"+
-                                     "6000000000203aff"+"20010db80000000000000000c0ca1eae"+"20010db80000000000000000c0ca1eaf"+
-                                     "8800554060000000"+"20010db80000000000000000c0ca1eae"+"0201"+"102233445566"));
+                otherMAC+myMAC+"86dd"+
+                "60000000" + "0020" + "3a" + "ff" +myIP+otherIP+
+                "8800554060000000"+myIP+"0201"+myMAC));
     auto test = new Test(in1, out1);
     test->runTest();
 
@@ -27,77 +35,48 @@ int main() {
 
 
     std::cout<<std::endl<< "TEST: TCP" << std::endl;
+    // SYN
     in2.push_back(Utils::hexToFrame(empty
-                                    + "3333ffca1eaf" //destination
-                                    + "665544332211" //source
-                                    + "86dd" //type (ipv6)
-                                    + "600000" //version and flow label
-                                    + "0028" //payload length
-                                    + "06" // next header (tcp)
-                                    + "40" //hop limit
-                                    + "20010db80000000000000000c0ca1eaf" //source
-                                    + "ff0200000000000000000001ffca1eae" //destination
-                                    + "c435" //source port
-                                    + "0016" //destination port
-                                    + "1111" //sequence number
-                                    + "0000" //acknowledgement number
-                                    + "a" //header length
-                                    + "0" //reserved + NS
-                                    + "02" // syn flag set
-                                    + "7080" //window size
-                                    + "63cd" //checksum
-                                    + "0000" //urgent pointer
-                                    + "00000000000000000000" //empty options
-                                     ));
-    //for checksum calculation
-    //20010db80000000000000000c0ca1eafff0200000000000000000001ffca1eae000628c435001611110000a00270800000000000000000000000000000
+                + myMAC + otherMAC + "86dd" 
+                + "60000000" + "0014" + "06" + "ff" + otherIP + myIP
+                + otherPort + myPort
+                + "29292929" + "00000000"
+                + "5" + "0" + "02" // data/4 + res?flafNS + SYN
+                + "03e8" + "63cd" + "0000"
+                ));
+    // SYN ACK
     out2.push_back(Utils::hexToFrame(empty
-                                     + "665544332211"
-                                     + "3333ffca1eaf"
-                                     + "86dd"
-                                     + "600000"
-                                     + "0028"
-                                     + "06"
-                                     + "40"
-                                     + "ff0200000000000000000001ffca1eae"
-                                     + "20010db80000000000000000c0ca1eaf"
-                                     + "0016"
-                                     + "c435"
-                                     + "1234"
-                                     + "1112"
-                                     + "a"
-                                     + "0"
-                                     + "12" //syn and ack flag set
-                                     + "6f90"
-                                     + "5278" //checksum
-                                     + "0000" // urgent pointer
-                                     + "00000000000000000000" //empty options
-                                      ));
-    //ff0200000000000000000001ffca1eae20010db80000000000000000c0ca1eaf0006280016c43512341112a0126f900000000000000000000000000000
+                + otherMAC + myMAC + "86dd"
+                + "60000000" + "0014" + "06" + "ff"
+                + myIP + otherIP 
+                + myPort + otherPort
+                + "12131415" + "2929292a"
+                + "5" + "0" + "12" //syn and ack
+                + "03e8" + "e576" + "0000"
+                ));
+    // ACK
     in2.push_back(Utils::hexToFrame(empty
-                                    + "3333ffca1eaf" //destination
-                                    + "665544332211" //source
-                                    + "86dd" //type (ipv6)
-                                    + "600000" //version and flow label
-                                    + "0028" //payload length
-                                    + "06" // next header (tcp)
-                                    + "40" //hop limit
-                                    + "20010db80000000000000000c0ca1eaf" //source
-                                    + "ff0200000000000000000001ffca1eae" //destination
-                                    + "c435" //source port
-                                    + "0016" //destination port
-                                    + "1112" //sequence number
-                                    + "1235" //acknowledgement number
-                                    + "a" //header length
-                                    + "0" //reserved + NS
-                                    + "10" // ack flag set
-                                    + "7080" //window size
-                                    + "5189" //checksum
-                                    + "0000" //urgent pointer
-                                    + "00000000000000000000" //empty options
-    ));
-    //20010db80000000000000000c0ca1eafff0200000000000000000001ffca1eae000628c435001611121235a01070800000000000000000000000000000
+                + myMAC + otherMAC + "86dd"
+                + "60000000" + "0014" + "06" + "ff"
+                + otherIP + myIP
+                + otherPort + myPort
+                + "2929292a" + "12131416"
+                + "5" + "0" + "10" // ack
+                + "03e8" + "5189" + "0000"
+                ));
 
+    // receive data ACK PSH
+    in2.push_back(Utils::hexToFrame(empty
+                + myMAC + otherMAC + "86dd" + 
+                + "60000000" + "0014" + "06" + "ff"
+                + otherIP + myIP
+                + otherPort + myPort
+                + "2929292a" + "12131416"
+                + "5" + "0" + "10" // ack , psh
+                + "03e8" + "5189" + "0000"
+                ));
+    
+    std::reverse(in2.begin(), in2.end()); 
     auto test2 = new Test(in2, out2);
     test2->runTest();
 

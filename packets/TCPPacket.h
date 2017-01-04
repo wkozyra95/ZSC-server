@@ -64,6 +64,7 @@ class TCPPacket {
         void respond(std::shared_ptr<State> state, uint8_t* destination_ip);
 
         void parse(uint8_t* packet, ssize_t size);
+        void displayPacket();
 };
 
 

@@ -24,6 +24,7 @@ add_executable(
         store/EthernetStore.cpp store/EthernetStore.h
         store/IPv6Store.cpp store/IPv6Store.h
         store/TCPStore.cpp store/TCPStore.h
+        store/TCPConection.cpp store/TCPConection.h
 )
 
 
@@ -46,5 +47,6 @@ add_executable(
         store/EthernetStore.cpp store/EthernetStore.h
         store/IPv6Store.cpp store/IPv6Store.h
         store/TCPStore.cpp store/TCPStore.h
+        store/TCPConection.cpp store/TCPConection.h
 
 )
