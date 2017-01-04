@@ -45,11 +45,13 @@ TCPPacket::TCPPacket(
     this->payload = new uint8_t[payload_length];
     memcpy(this->payload, payload, payload_length);
     this->payload_length = payload_length;
+    
+    std::cout << "SEND tcp: \n";
     displayPacket();
 }
 
 void TCPPacket::parse(uint8_t *packet, ssize_t size) {
-    std::cout << Utils::hex_format_display(packet, size) << std::endl; 
+    // std::cout << Utils::hex_format_display(packet, size) << std::endl; 
     this->source_port = (uint16_t) (packet[1] + (packet[0] * 0x100));
     this->destination_port = (uint16_t) (packet[3] + (packet[2] * 0x100));
 
@@ -65,7 +67,7 @@ void TCPPacket::parse(uint8_t *packet, ssize_t size) {
             + packet[9] * 0x10000
             + packet[8] * 0x1000000);
 
-    this->data_offset = packet[12] >> 4;
+    this->data_offset = (packet[12] >> 4) * 4;
 
     this->isNS = (packet[12] & 1) == 1;
     this->isCWR = (packet[13] & 128) == 128;
@@ -82,6 +84,10 @@ void TCPPacket::parse(uint8_t *packet, ssize_t size) {
 
     this->checksum = (uint16_t) (packet[16] + (packet[17] * 0xFF));
     this->urgent_pointer = (uint16_t) (packet[18] + (packet[19] * 0xFF));
+
+    this->payload_length = size - this->data_offset;
+    this->payload = new uint8_t[size];
+    memcpy(this->payload, packet, this->payload_length);
 
 }
 
@@ -115,13 +121,17 @@ void TCPPacket::handle(std::shared_ptr<State> state, uint8_t* source_ip) {
         }
         connection->ack_seq_number = this->seq_number + 1;
     } else if (connection->state == ESTABLISHED && this->isACK && this->isPSH) {
-        std::vector<uint8_t> data(payload, payload + this->payload_length);
+        std::cout << Utils::hex_format_display(this->payload, this->payload_length) << std::endl;
+        
+        std::vector<uint8_t> data(payload, payload + 30);
         connection->payload.insert(
                 connection->payload.end(),
                 data.begin(),
                 data.end()
                 );
         connection->ack_index = this->seq_number + payload_length;
+
+//        std::cout << "dddddddddddddd" << connection->ack_index << std::endl;
         std::make_shared<TCPPacket>( //send ack
                 this->destination_port,
                 this->source_port,
@@ -170,7 +180,7 @@ void TCPPacket::respond(std::shared_ptr<State> state, uint8_t* destination_ip) {
         (isSYN ? F_SYN : 0) |
         (isFIN ? F_FIN : 0);
 
-    std::cout<< "ddddd" << window_size << std::endl;
+//    std::cout<< "ddddd" << window_size << std::endl;
     ipv6_payload[14] = ((uint8_t*) &this->window_size)[1];
     ipv6_payload[15] = ((uint8_t*) &this->window_size)[0];
 
@@ -214,9 +224,10 @@ void TCPPacket::respond(std::shared_ptr<State> state, uint8_t* destination_ip) {
 void TCPPacket::displayPacket() {
     
     std::cout << "source port: " << this->source_port << "\tdestination port: " << this->destination_port << std::endl <<
-        "seq: " << this->seq_number << "\tack: " << this->ack_number << std::endl <<
-        "isACK: " << this->isACK << "\tisSYN: " << this->isSYN << "\tisPSH: " << isPSH << std::endl << std::endl;
-        
+        "seq: " << this->seq_number << "\tack: " << this->ack_number << "\tpayload_length: " << this->payload_length <<std::endl <<
+        "isACK: " << this->isACK << "\tisSYN: " << this->isSYN << "\tisPSH: " << isPSH << std::endl << 
+    //Utils::hex_format_display(this->payload, this->payload_length)<<std::endl << 
+    std::endl;        
 }
 
 

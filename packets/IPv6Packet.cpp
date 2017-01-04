@@ -13,13 +13,12 @@
 
 void IPv6Packet::handle(std::shared_ptr<State> store, uint8_t* mac) {
     store->ethernetStore->registerMAC(source, mac);
-    displayPacket();
+    // displayPacket();
     if(next_header == 58){
        std::make_shared<IcmpPacket>(payload, payload_length)->handle(store, source);
     }
     if(next_header == 6){
         std::make_shared<TCPPacket>(this->payload, this->payload_length)->handle(store, source);
-        std::cout << "\ntcp\n" << std::endl;
     }
 }
 

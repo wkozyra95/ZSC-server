@@ -35,6 +35,7 @@ int main() {
 
 
     std::cout<<std::endl<< "TEST: TCP" << std::endl;
+    std::string window_size("03e8");
     // SYN
     in2.push_back(Utils::hexToFrame(empty
                 + myMAC + otherMAC + "86dd" 
@@ -42,7 +43,7 @@ int main() {
                 + otherPort + myPort
                 + "29292929" + "00000000"
                 + "5" + "0" + "02" // data/4 + res?flafNS + SYN
-                + "03e8" + "63cd" + "0000"
+                + window_size + "63cd" + "0000"
                 ));
     // SYN ACK
     out2.push_back(Utils::hexToFrame(empty
@@ -52,7 +53,7 @@ int main() {
                 + myPort + otherPort
                 + "12131415" + "2929292a"
                 + "5" + "0" + "12" //syn and ack
-                + "03e8" + "e576" + "0000"
+                + window_size + "e576" + "0000"
                 ));
     // ACK
     in2.push_back(Utils::hexToFrame(empty
@@ -62,18 +63,30 @@ int main() {
                 + otherPort + myPort
                 + "2929292a" + "12131416"
                 + "5" + "0" + "10" // ack
-                + "03e8" + "5189" + "0000"
+                + window_size + "5189" + "0000"
                 ));
 
-    // receive data ACK PSH
+     // send data ACK PSH
     in2.push_back(Utils::hexToFrame(empty
                 + myMAC + otherMAC + "86dd"
-                + "60000000" + "0014" + "06" + "ff"
+                + "60000000" + "001e" + "06" + "ff"
                 + otherIP + myIP
                 + otherPort + myPort
                 + "2929292a" + "12131416"
-                + "5" + "0" + "10" // ack , psh
-                + "03e8" + "5189" + "0000"
+                + "5" + "0" + "18" // ack
+                + window_size + "5189" + "0000"
+                + "01234567899876543210"
+                ));   
+
+    // receive data ACK
+    out2.push_back(Utils::hexToFrame(empty
+                + otherMAC + myMAC + "86dd" + 
+                + "60000000" + "0014" + "06" + "ff"
+                + myIP + otherIP
+                + myPort +otherPort
+                + "12131416" + "29292934"
+                + "5" + "0" + "10" // ack
+                + window_size + "da5a" + "0000"
                 ));
     
     std::reverse(in2.begin(), in2.end()); 
