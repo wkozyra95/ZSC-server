@@ -67,7 +67,7 @@ int main() {
 
     // receive data ACK PSH
     in2.push_back(Utils::hexToFrame(empty
-                + myMAC + otherMAC + "86dd" + 
+                + myMAC + otherMAC + "86dd"
                 + "60000000" + "0014" + "06" + "ff"
                 + otherIP + myIP
                 + otherPort + myPort
