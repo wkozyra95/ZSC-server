@@ -4,9 +4,10 @@
 
 uint8_t *EthernetStore::getMacForIP(uint8_t *ip) {
     std::string ip_str(ip, ip+16);
-
+//    uint8_t example_mac[] = { 0x10, 0x22, 0x33, 0x44, 0x55, 0x66 };
     auto mac = new uint8_t[6];
     std::copy(mapping[ip_str].begin(), mapping[ip_str].end(), mac);
+//    memcpy(mac, example_mac, 6);
     return mac;
 }
 

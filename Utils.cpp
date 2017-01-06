@@ -1,4 +1,6 @@
 #include "Utils.h"
+#include <cstring>
+#include <cstdio>
 #include <iostream>
 
 std::string Utils::hex_format_display(uint8_t *data, ssize_t size) {
@@ -6,8 +8,7 @@ std::string Utils::hex_format_display(uint8_t *data, ssize_t size) {
     for(int i = 0; i<size; i++) {
         sprintf(dataDisplay + i*3, "%02X:", data[i]);
     }
-    std::string str(dataDisplay);
-    delete[] dataDisplay; //TODO not working
+    std::string str = dataDisplay;
     return str;
 }
 
@@ -49,7 +50,7 @@ uint16_t Utils::checksum(uint8_t* buf, int size) {
 
 std::shared_ptr<RawFrame> Utils::hexToFrame(std::string number) {
     if(number.length() % 2 != 0) {
-        std::cout << "invalid frame string" << std::endl;
+        std::cout << "ERROR: Invalid frame string: " << number << std::endl;
     }
 
     int frame_length = (number.length() + 1)/2;

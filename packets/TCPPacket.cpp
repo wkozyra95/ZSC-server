@@ -6,7 +6,7 @@
 #include "../store/TCPStore.h"
 #include "../store/IPv6Store.h"
 #include "../Utils.h"
-
+#include <unistd.h>
 TCPPacket::TCPPacket(uint8_t *packet, ssize_t size) {
     parse(packet, size);
     displayPacket();
@@ -87,7 +87,7 @@ void TCPPacket::parse(uint8_t *packet, ssize_t size) {
 
     this->payload_length = size - this->data_offset;
     this->payload = new uint8_t[size];
-    memcpy(this->payload, packet, this->payload_length);
+    memcpy(this->payload + this->data_offset, packet, (size_t) this->payload_length);
 
 }
 
@@ -121,7 +121,10 @@ void TCPPacket::handle(std::shared_ptr<State> state, uint8_t* source_ip) {
         }
         connection->ack_seq_number = this->seq_number + 1;
     } else if (connection->state == ESTABLISHED && this->isACK && this->isPSH) {
-        std::cout << Utils::hex_format_display(this->payload, this->payload_length) << std::endl;
+        uint8_t* before = new uint8_t[this->payload_length];
+        //memcpy(before, this->payload, this->payload_length);
+        //std::cout << Utils::hex_format_display(this->payload, this->payload_length) << std::endl;
+
         
         std::vector<uint8_t> data(payload, payload + 30);
         connection->payload.insert(
@@ -201,7 +204,7 @@ void TCPPacket::respond(std::shared_ptr<State> state, uint8_t* destination_ip) {
         checksum_base[35] = ((uint8_t*)&tcp_packet_size)[0];
         memset(checksum_base + 36, 0, 3);
         checksum_base[39] = 6;
-        memcpy(checksum_base + 40, this->payload, (size_t) this->payload_length);
+        memcpy(checksum_base + 40, ipv6_payload, tcp_packet_size);
 
         checksum = Utils::checksum(checksum_base, (int) (tcp_packet_size + 40));
         delete checksum_base;

@@ -53,7 +53,7 @@ int main() {
                 + myPort + otherPort
                 + "12131415" + "2929292a"
                 + "5" + "0" + "12" //syn and ack
-                + window_size + "e576" + "0000"
+                + window_size + "d196" + "0000"
                 ));
     // ACK
     in2.push_back(Utils::hexToFrame(empty
@@ -86,9 +86,33 @@ int main() {
                 + myPort +otherPort
                 + "12131416" + "29292934"
                 + "5" + "0" + "10" // ack
-                + window_size + "da5a" + "0000"
+                + window_size + "d18d" + "0000"
                 ));
+    // respond with data
+    out2.push_back(Utils::hexToFrame(empty
+                + otherMAC + myMAC + "86dd" + 
+                + "60000000" + "001e" + "06" + "ff"
+                + myIP + otherIP
+                + myPort +otherPort
+                + "12131416" + "29292934"
+                + "5" + "0" + "18" // ack
+                + window_size + "d196" + "0000"
+                + "01234567899876543210"
+                ));
+    out2.pop_back();
     
+    // receive ACK
+    in2.push_back(Utils::hexToFrame(empty
+                + myMAC + otherMAC + "86dd"
+                + "60000000" + "001e" + "06" + "ff"
+                + otherIP + myIP
+                + otherPort + myPort
+                + "29292934" + "12131420"
+                + "5" + "0" + "10" // ack
+                + window_size + "5189" + "0000"
+                ));
+    in2.pop_back();
+
     std::reverse(in2.begin(), in2.end()); 
     auto test2 = new Test(in2, out2);
     test2->runTest();
