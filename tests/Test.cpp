@@ -24,30 +24,32 @@ void Test::runChecksResults(std::vector<std::shared_ptr<RawFrame> > result) {
     bool testResult = true; // test successful
     int min_size = result.size()>output.size() ? output.size() : result.size();
     
+    std::cout << "\033[33mexpected frames: " << output.size() << std::endl << "received: " << result.size() << "\033[0m" << std::endl << std::endl;
     for(int i = 0; i< min_size ; i++) {
         auto expected = Utils::hex_format_display(output[i]->frame, output[i]->size);
         auto received = Utils::hex_format_display(result[i]->frame, result[i]->size);
         if(expected.compare(received) != 0 ) {
-            std::cout << "e: " + expected << std::endl << "r: " + received << std::endl << std::endl;
+            std::cout << "\033[31me: " + expected << std::endl << "r: " + received << "\033[0m" << std::endl << std::endl;
             testResult = false;
         }
     }
-    if(result.size() >  output.size()) {
-        std::cout<< "Received additional frames" << std::endl;
-        for(int i = min_size ; i< result.size(); i++)
+    if(result.size() > output.size()) {
+        std::cout << "\033[31mReceived additional frames\033[0m" << std::endl;
+        for(int i = min_size ; i< result.size(); i++) {
             std::cout << Utils::hex_format_display(result[i]->frame, result[i]->size) << std::endl;
-            testResult = false;
-    }
-    
-    if(result.size() < output.size()) {
-        std::cout<< "Missing frames" << std::endl;
-        for(int i = min_size; i< output.size(); i++)
-            std::cout << Utils::hex_format_display(output[i]->frame, output[i]->size) << std::endl;
-            testResult = false;
+        }
+        testResult = false;
     }
 
-    if(testResult)
-    {
-        std::cout << "Test completed successfully" << std::endl;
+    if(result.size() < output.size()) {
+        std::cout<< "\033[31mMissing frames\033[0m" << std::endl;
+        for(int i = min_size; i< output.size(); i++) {
+            std::cout << Utils::hex_format_display(output[i]->frame, output[i]->size) << std::endl;
+        }
+        testResult = false;
+    }
+
+    if(testResult) {
+        std::cout << "\033[32mTest completed successfully\033[0m" << std::endl;
     }
 }

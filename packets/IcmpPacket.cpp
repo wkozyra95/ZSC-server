@@ -34,6 +34,7 @@ void IcmpPacket::parse(uint8_t* packet, uint16_t length) {
 }
 
 void IcmpPacket::handle(std::shared_ptr<State> state, uint8_t* sourceipv6) {
+    displayPacket();
     if(type == 135 && code == 0) {
         auto neighbour_solicitation = std::make_shared<IcmpPacket>(136, 0, payload, payload_length);
         neighbour_solicitation->respond(state, sourceipv6);
@@ -42,7 +43,7 @@ void IcmpPacket::handle(std::shared_ptr<State> state, uint8_t* sourceipv6) {
 }
 
 void IcmpPacket::respond(std::shared_ptr<State> state, uint8_t* destinationipv6) {
-
+    displayPacket();
     if(type == 136 && code == 0) {
         uint8_t *ip_payload = new uint8_t[payload_length + 4];
         ip_payload[0] = type;
@@ -76,7 +77,7 @@ void IcmpPacket::respond(std::shared_ptr<State> state, uint8_t* destinationipv6)
             memcpy(checksum_base + 40, ip_payload, (size_t) (payload_length + 4));
 
             checksum = Utils::checksum(checksum_base, (int) (payload_length + 44));
-            delete checksum_base;
+            delete[] checksum_base;
         }
 
         ip_payload[2] = ((uint8_t*) (&checksum))[0];
@@ -93,5 +94,14 @@ void IcmpPacket::respond(std::shared_ptr<State> state, uint8_t* destinationipv6)
         );
         ip_packet->respond(state);
 
+    }
+}
+
+void IcmpPacket::displayPacket() {
+    if (this->type == 135 ) {
+        std::cout << "ICMP request\tPayloadSize: " << this->payload_length << 
+            "\tPayload: " << Utils::hex_format_display(this->payload, this->payload_length) << std::endl; 
+    } else if (this->type == 136) {
+        std::cout << "ICMP response" << std::endl;
     }
 }

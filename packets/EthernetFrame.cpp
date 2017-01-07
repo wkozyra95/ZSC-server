@@ -34,8 +34,8 @@ EthernetFrame::EthernetFrame(uint8_t *destination, uint16_t type, uint8_t *paylo
     this->type[1] = (uint8_t) type;
 
 
-    this->payload = new uint8_t[100];
-    memcpy(this->payload, payload, 100);
+    this->payload = new uint8_t[payloadSize];
+    memcpy(this->payload, payload, payloadSize);
 
     this->payloadSize = payloadSize;
 }
@@ -58,6 +58,7 @@ void EthernetFrame::respond(std::shared_ptr<State> state) {
 
 
 void EthernetFrame::handle(std::shared_ptr<State> state) {
+    // displayFrameLong();
     std::string type = Utils::hex_format_display(this->type, 2);
     if(type == "08:00:") {
 //        printf("IPv4 packet\n");
@@ -164,7 +165,8 @@ void EthernetFrame::displayFrameLong() {
     destination += detectSpecialAddress(destination);
     type += detectType(type);
 
-    std::cout << "Source: " << source << "\tDestination: " << destination << "\tType: " << type << std::endl;
+    std::cout << "Source: " << source << "\tDestination: " << destination << "\tType: " << type << std::endl
+        << "Size: " << this->payloadSize << "\tPayload: " << Utils::hex_format_display(this->payload, this->payloadSize) << std::endl;
 }
 
 std::string EthernetFrame::detectSpecialAddress(std::string basic_string) {

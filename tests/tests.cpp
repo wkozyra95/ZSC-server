@@ -16,7 +16,9 @@ int main() {
     std::string empty = "";
     std::vector<std::shared_ptr<RawFrame> > in1;
 
+    //----------------------------------------------------------------------------------------------------
     //ICMP
+    std::cout << "--------------------------------------------------" << std::endl;
     std::cout << "TEST: ICMP" << std::endl;
     in1.push_back(Utils::hexToFrame(empty +
                 "3333ffca1eaf"+otherMAC+"86dd" +
@@ -34,6 +36,9 @@ int main() {
     std::vector<std::shared_ptr<RawFrame>> out2;
 
 
+    //----------------------------------------------------------------------------------------------------
+    //TCP
+    std::cout << "--------------------------------------------------" << std::endl;
     std::cout<<std::endl<< "TEST: TCP" << std::endl;
     std::string window_size("03e8");
     // SYN
@@ -117,6 +122,7 @@ int main() {
     auto test2 = new Test(in2, out2);
     test2->runTest();
 
+    std::cout << "--------------------------------------------------" << std::endl;
     std::cout << "END" << std::endl;
 
 }

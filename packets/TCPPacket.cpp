@@ -9,7 +9,6 @@
 #include <unistd.h>
 TCPPacket::TCPPacket(uint8_t *packet, ssize_t size) {
     parse(packet, size);
-    displayPacket();
 }
 
 TCPPacket::TCPPacket(
@@ -41,13 +40,14 @@ TCPPacket::TCPPacket(
     this->isNS = NSflag != 0;
     this->window_size = window_size;
     this->urgent_pointer = urgent_pointer;
-
+    this->checksum = 0;
     this->payload = new uint8_t[payload_length];
-    memcpy(this->payload, payload, payload_length);
+    if(payload == nullptr) {
+        this->payload = nullptr;
+    } else {
+        memcpy(this->payload, payload, payload_length);
+    }
     this->payload_length = payload_length;
-    
-    std::cout << "SEND tcp: \n";
-    displayPacket();
 }
 
 void TCPPacket::parse(uint8_t *packet, ssize_t size) {
@@ -87,11 +87,12 @@ void TCPPacket::parse(uint8_t *packet, ssize_t size) {
 
     this->payload_length = size - this->data_offset;
     this->payload = new uint8_t[size];
-    memcpy(this->payload + this->data_offset, packet, (size_t) this->payload_length);
+    memcpy(this->payload, packet + this->data_offset, (size_t) this->payload_length);
 
 }
 
 void TCPPacket::handle(std::shared_ptr<State> state, uint8_t* source_ip) {
+    displayPacket();
     auto connection = state->tcpStore->getConnection(source_ip, source_port, destination_port);
     if( this->isSYN ) { // listen for connection request
         connection->state = LISTEN;
@@ -121,8 +122,6 @@ void TCPPacket::handle(std::shared_ptr<State> state, uint8_t* source_ip) {
         }
         connection->ack_seq_number = this->seq_number + 1;
     } else if (connection->state == ESTABLISHED && this->isACK && this->isPSH) {
-        uint8_t* before = new uint8_t[this->payload_length];
-        //memcpy(before, this->payload, this->payload_length);
         //std::cout << Utils::hex_format_display(this->payload, this->payload_length) << std::endl;
 
         
@@ -153,6 +152,9 @@ void TCPPacket::handle(std::shared_ptr<State> state, uint8_t* source_ip) {
 }
 
 void TCPPacket::respond(std::shared_ptr<State> state, uint8_t* destination_ip) {
+    std::cout << "SEND tcp: \n";
+    displayPacket();
+    
     uint16_t tcp_packet_size = this->payload_length + this->data_offset;
     auto ipv6_payload = new uint8_t[tcp_packet_size];
 
@@ -188,6 +190,8 @@ void TCPPacket::respond(std::shared_ptr<State> state, uint8_t* destination_ip) {
     ipv6_payload[15] = ((uint8_t*) &this->window_size)[0];
 
     // checksum balnk for now [16, 17]
+    ipv6_payload[16] = 0;
+    ipv6_payload[17] = 0; 
 
     ipv6_payload[18] = ((uint8_t*) &this->urgent_pointer)[1];
     ipv6_payload[19] = ((uint8_t*) &this->urgent_pointer)[0];
@@ -206,8 +210,8 @@ void TCPPacket::respond(std::shared_ptr<State> state, uint8_t* destination_ip) {
         checksum_base[39] = 6;
         memcpy(checksum_base + 40, ipv6_payload, tcp_packet_size);
 
-        checksum = Utils::checksum(checksum_base, (int) (tcp_packet_size + 40));
-        delete checksum_base;
+        checksum = Utils::checksum(checksum_base, tcp_packet_size + 40);
+        delete[] checksum_base;
     }
 
     ipv6_payload[16] = ((uint8_t*) (&checksum))[0];

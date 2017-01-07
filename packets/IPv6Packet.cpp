@@ -23,7 +23,8 @@ void IPv6Packet::handle(std::shared_ptr<State> store, uint8_t* mac) {
 }
 
 void IPv6Packet::respond(std::shared_ptr<State> store) {
-    uint8_t* ethernet_payload = new uint8_t[payload_length + 40];
+    // displayPacket();
+    uint8_t* ethernet_payload = new uint8_t[this->payload_length + 40];
     // version
     ethernet_payload[0] = version << 4;
     // traffic_class
@@ -73,7 +74,8 @@ IPv6Packet::IPv6Packet(
     this->payload_length = payload_length;
     this->next_header = type;
     this->ttl = 255;
-
+    
+    memset(this->source, 0 , 16);    
     memcpy(this->destination, destination, 16);
     this->payload = new uint8_t[payload_length];
     memcpy(this->payload, payload, payload_length);
@@ -124,7 +126,8 @@ void IPv6Packet::displayPacket() {
     std::cout << "Ver: " << version_str << "\ttc: " << traffic_class_str
               << "\tFlow label: " << flow_label_str << "\tpayload: " << payload_length_str
               << "\tNext: " << next_header_str << "\t TTL: " << ttl_str << std::endl
-              << "Source: " << source_str << "\tDestiantion: " << destination_src << std::endl;
+              << "Source: " << source_str << "\tDestiantion: " << destination_src << std::endl
+              << "Payload: " << Utils::hex_format_display(payload, this->payload_length)  << std::endl;
 }
 
 
