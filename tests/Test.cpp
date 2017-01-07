@@ -34,18 +34,20 @@ void Test::runChecksResults(std::vector<std::shared_ptr<RawFrame> > result) {
         }
     }
     if(result.size() > output.size()) {
-        std::cout << "\033[31mReceived additional frames\033[0m" << std::endl;
-        for(int i = min_size ; i< result.size(); i++) {
+        std::cout << "\033[31mReceived additional frames" << std::endl;
+        for(unsigned int i = min_size ; i< result.size(); i++) {
             std::cout << Utils::hex_format_display(result[i]->frame, result[i]->size) << std::endl;
         }
+        std::cout << "\033[0m" << std::endl;
         testResult = false;
     }
 
     if(result.size() < output.size()) {
-        std::cout<< "\033[31mMissing frames\033[0m" << std::endl;
-        for(int i = min_size; i< output.size(); i++) {
+        std::cout<< "\033[31mMissing frames" << std::endl;
+        for(unsigned int i = min_size; i< output.size(); i++) {
             std::cout << Utils::hex_format_display(output[i]->frame, output[i]->size) << std::endl;
         }
+        std::cout << "\033[0m" << std::endl;
         testResult = false;
     }
 

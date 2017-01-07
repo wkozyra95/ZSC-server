@@ -124,7 +124,7 @@ void TCPPacket::handle(std::shared_ptr<State> state, uint8_t* source_ip) {
     } else if (connection->state == ESTABLISHED && this->isACK && this->isPSH) {
         //std::cout << Utils::hex_format_display(this->payload, this->payload_length) << std::endl;
 
-        
+
         std::vector<uint8_t> data(payload, payload + 30);
         connection->payload.insert(
                 connection->payload.end(),
@@ -133,7 +133,7 @@ void TCPPacket::handle(std::shared_ptr<State> state, uint8_t* source_ip) {
                 );
         connection->ack_index = this->seq_number + payload_length;
 
-//        std::cout << "dddddddddddddd" << connection->ack_index << std::endl;
+        //        std::cout << "dddddddddddddd" << connection->ack_index << std::endl;
         std::make_shared<TCPPacket>( //send ack
                 this->destination_port,
                 this->source_port,
@@ -147,6 +147,21 @@ void TCPPacket::handle(std::shared_ptr<State> state, uint8_t* source_ip) {
                 nullptr,
                 0
                 )->respond(state, source_ip);
+
+        uint8_t response[] = { 0x01, 0x23, 0x45, 0x67, 0x89, 0x98, 0x76, 0x54, 0x32, 0x10 };
+        std::make_shared<TCPPacket>(
+                this->destination_port,
+                this->source_port,
+                connection->seq_number,
+                connection->ack_index,
+                20,
+                F_ACK | F_PSH,
+                0,
+                1000,
+                0x0000,
+                response,
+                10 
+                )->respond(state, source_ip);
     }
 
 }
@@ -154,7 +169,7 @@ void TCPPacket::handle(std::shared_ptr<State> state, uint8_t* source_ip) {
 void TCPPacket::respond(std::shared_ptr<State> state, uint8_t* destination_ip) {
     std::cout << "SEND tcp: \n";
     displayPacket();
-    
+
     uint16_t tcp_packet_size = this->payload_length + this->data_offset;
     auto ipv6_payload = new uint8_t[tcp_packet_size];
 
@@ -185,7 +200,7 @@ void TCPPacket::respond(std::shared_ptr<State> state, uint8_t* destination_ip) {
         (isSYN ? F_SYN : 0) |
         (isFIN ? F_FIN : 0);
 
-//    std::cout<< "ddddd" << window_size << std::endl;
+    //    std::cout<< "ddddd" << window_size << std::endl;
     ipv6_payload[14] = ((uint8_t*) &this->window_size)[1];
     ipv6_payload[15] = ((uint8_t*) &this->window_size)[0];
 
@@ -196,8 +211,10 @@ void TCPPacket::respond(std::shared_ptr<State> state, uint8_t* destination_ip) {
     ipv6_payload[18] = ((uint8_t*) &this->urgent_pointer)[1];
     ipv6_payload[19] = ((uint8_t*) &this->urgent_pointer)[0];
 
+    memcpy(ipv6_payload + 20, this->payload, this->payload_length);
+
     // ipv6 pseudo header + checksum
-    
+
     {
         uint8_t *checksum_base = new uint8_t[tcp_packet_size+ 40];
         memcpy(checksum_base, state->ipv6Store->getMyIp(), 16);
@@ -219,22 +236,22 @@ void TCPPacket::respond(std::shared_ptr<State> state, uint8_t* destination_ip) {
 
     uint8_t flow[] = {0x00, 0x00, 0x00};
     std::make_shared<IPv6Packet>(
-                destination_ip,
-                (uint8_t) 6,
-                (uint8_t) 0,
-                flow,
-                ipv6_payload,
-                tcp_packet_size        
+            destination_ip,
+            (uint8_t) 6,
+            (uint8_t) 0,
+            flow,
+            ipv6_payload,
+            tcp_packet_size        
             )->respond(state);
 }
 
 void TCPPacket::displayPacket() {
-    
+
     std::cout << "source port: " << this->source_port << "\tdestination port: " << this->destination_port << std::endl <<
         "seq: " << this->seq_number << "\tack: " << this->ack_number << "\tpayload_length: " << this->payload_length <<std::endl <<
         "isACK: " << this->isACK << "\tisSYN: " << this->isSYN << "\tisPSH: " << isPSH << std::endl << 
-    //Utils::hex_format_display(this->payload, this->payload_length)<<std::endl << 
-    std::endl;        
+        //Utils::hex_format_display(this->payload, this->payload_length)<<std::endl << 
+        std::endl;        
 }
 
 

@@ -101,10 +101,9 @@ int main() {
                 + myPort +otherPort
                 + "12131416" + "29292934"
                 + "5" + "0" + "18" // ack
-                + window_size + "d196" + "0000"
+                + window_size + "58f4" + "0000"
                 + "01234567899876543210"
                 ));
-    out2.pop_back();
     
     // receive ACK
     in2.push_back(Utils::hexToFrame(empty
@@ -116,7 +115,6 @@ int main() {
                 + "5" + "0" + "10" // ack
                 + window_size + "5189" + "0000"
                 ));
-    in2.pop_back();
 
     std::reverse(in2.begin(), in2.end()); 
     auto test2 = new Test(in2, out2);
