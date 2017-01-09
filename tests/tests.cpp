@@ -46,7 +46,7 @@ int main() {
                 + myMAC + otherMAC + "86dd" 
                 + "60000000" + "0014" + "06" + "ff" + otherIP + myIP
                 + otherPort + myPort
-                + "29292929" + "00000000"
+                + "29292929" + "00000000" // syn 0 ack 00000
                 + "5" + "0" + "02" // data/4 + res?flafNS + SYN
                 + window_size + "63cd" + "0000"
                 ));
@@ -56,7 +56,7 @@ int main() {
                 + "60000000" + "0014" + "06" + "ff"
                 + myIP + otherIP 
                 + myPort + otherPort
-                + "12131415" + "2929292a"
+                + "12131415" + "2929292a" //syn 0 ack 1
                 + "5" + "0" + "12" //syn and ack
                 + window_size + "d196" + "0000"
                 ));
@@ -66,7 +66,7 @@ int main() {
                 + "60000000" + "0014" + "06" + "ff"
                 + otherIP + myIP
                 + otherPort + myPort
-                + "2929292a" + "12131416"
+                + "2929292a" + "12131416" // syn 1 ack 1
                 + "5" + "0" + "10" // ack
                 + window_size + "5189" + "0000"
                 ));
@@ -77,7 +77,7 @@ int main() {
                 + "60000000" + "001e" + "06" + "ff"
                 + otherIP + myIP
                 + otherPort + myPort
-                + "2929292a" + "12131416"
+                + "2929292a" + "12131416" //syn 1 esyn 11 ack 1
                 + "5" + "0" + "18" // ack
                 + window_size + "5189" + "0000"
                 + "01234567899876543210"
@@ -89,7 +89,7 @@ int main() {
                 + "60000000" + "0014" + "06" + "ff"
                 + myIP + otherIP
                 + myPort +otherPort
-                + "12131416" + "29292934"
+                + "12131416" + "29292934" // syn 1 ack 11
                 + "5" + "0" + "10" // ack
                 + window_size + "d18d" + "0000"
                 ));
@@ -99,7 +99,7 @@ int main() {
                 + "60000000" + "001e" + "06" + "ff"
                 + myIP + otherIP
                 + myPort +otherPort
-                + "12131416" + "29292934"
+                + "12131416" + "29292934" //syn 1 esyn 11 ack 11
                 + "5" + "0" + "18" // ack
                 + window_size + "58f4" + "0000"
                 + "01234567899876543210"
@@ -108,13 +108,60 @@ int main() {
     // receive ACK
     in2.push_back(Utils::hexToFrame(empty
                 + myMAC + otherMAC + "86dd"
-                + "60000000" + "001e" + "06" + "ff"
+                + "60000000" + "0014" + "06" + "ff"
                 + otherIP + myIP
                 + otherPort + myPort
-                + "29292934" + "12131420"
+                + "29292934" + "12131420" //syn 11 ack 11
                 + "5" + "0" + "10" // ack
                 + window_size + "5189" + "0000"
                 ));
+
+    // second packet
+    // send data ACK PSH
+    in2.push_back(Utils::hexToFrame(empty
+                + myMAC + otherMAC + "86dd"
+                + "60000000" + "001e" + "06" + "ff"
+                + otherIP + myIP
+                + otherPort + myPort
+                + "29292934" + "12131420" // syn 11 esyn11 ack 11
+                + "5" + "0" + "18" // ack
+                + window_size + "5189" + "0000"
+                + "01234567899876543210"
+                ));   
+
+    // receive data ACK
+    out2.push_back(Utils::hexToFrame(empty
+                + otherMAC + myMAC + "86dd" + 
+                + "60000000" + "0014" + "06" + "ff"
+                + myIP + otherIP
+                + myPort +otherPort
+                + "12131420" + "2929293e" // syn 11 ack 21
+                + "5" + "0" + "10" // ack
+                + window_size + "d179" + "0000"
+                ));
+    // respond with data
+    out2.push_back(Utils::hexToFrame(empty
+                + otherMAC + myMAC + "86dd" + 
+                + "60000000" + "001e" + "06" + "ff"
+                + myIP + otherIP
+                + myPort +otherPort
+                + "12131420" + "2929293e" // syn 11 esyn 21 ack 21
+                + "5" + "0" + "18" // ack
+                + window_size + "58e0" + "0000"
+                + "01234567899876543210"
+                ));
+    
+    // receive ACK
+    in2.push_back(Utils::hexToFrame(empty
+                + myMAC + otherMAC + "86dd"
+                + "60000000" + "0014" + "06" + "ff"
+                + otherIP + myIP
+                + otherPort + myPort
+                + "2929293e" + "1213142a" // syn 21 ack 21
+                + "5" + "0" + "10" // ack
+                + window_size + "5189" + "0000"
+                ));
+
 
     std::reverse(in2.begin(), in2.end()); 
     auto test2 = new Test(in2, out2);

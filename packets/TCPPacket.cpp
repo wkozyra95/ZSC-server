@@ -117,13 +117,15 @@ void TCPPacket::handle(std::shared_ptr<State> state, uint8_t* source_ip) {
                 )->respond(state, source_ip);
     } else if( this->isACK && connection->state == LISTEN ) { // listen for ack of
         connection->state = ESTABLISHED;
-        if(this->seq_number != connection->ack_index) {
-            std::cout << "ERROR: MISSING PREVIOUS ACK retransmit" << std::endl;
+        if(this->seq_number != connection->ack_index || this->ack_number != connection->seq_number) {
+            std::cout << "ERROR: MISSING PREVIOUS ACK retransmit1" << std::endl;
         }
-        connection->ack_seq_number = this->seq_number + 1;
+        connection->ack_seq_number = this->ack_number;
     } else if (connection->state == ESTABLISHED && this->isACK && this->isPSH) {
         //std::cout << Utils::hex_format_display(this->payload, this->payload_length) << std::endl;
-
+        if (false) {
+            std::cout << "ERROR: MISSING PREVIOUS ACK retransmit2" << std::endl;
+        }
 
         std::vector<uint8_t> data(payload, payload + 30);
         connection->payload.insert(
@@ -147,12 +149,13 @@ void TCPPacket::handle(std::shared_ptr<State> state, uint8_t* source_ip) {
                 nullptr,
                 0
                 )->respond(state, source_ip);
-
+ 
+        connection->seq_number += 10;
         uint8_t response[] = { 0x01, 0x23, 0x45, 0x67, 0x89, 0x98, 0x76, 0x54, 0x32, 0x10 };
         std::make_shared<TCPPacket>(
                 this->destination_port,
                 this->source_port,
-                connection->seq_number,
+                connection->ack_seq_number,
                 connection->ack_index,
                 20,
                 F_ACK | F_PSH,
@@ -162,6 +165,11 @@ void TCPPacket::handle(std::shared_ptr<State> state, uint8_t* source_ip) {
                 response,
                 10 
                 )->respond(state, source_ip);
+    } else if (connection->state == ESTABLISHED && this->isACK && !this->isPSH) { 
+        if(connection->seq_number == this->ack_number) {
+            std::cout << "ERROR: MISSING PREVIOUS ACK retransmit3" << std::endl;
+        }
+        connection->ack_seq_number = this->ack_number;
     }
 
 }

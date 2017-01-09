@@ -107,6 +107,7 @@ void IPv6Packet::parse_header(uint8_t *frame, ssize_t size) {
     memcpy(destination, frame + 24, 16);
 
     payload = new uint8_t[payload_length];
+    std::cout<< payload_length << std::endl;
     memcpy(payload, frame + 40, payload_length);
 
 }
