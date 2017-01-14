@@ -55,7 +55,7 @@ class TCPPacket {
                 uint8_t NSflag,
                 uint16_t window_size,
                 uint16_t urgent_pointer,
-                uint8_t* payload,
+                const uint8_t* payload,
                 ssize_t payload_length
                 );
 

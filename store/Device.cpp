@@ -29,7 +29,7 @@ void Device::init() {
        changes in the packet data
        ETH_P_ALL - all packets
      */
-    if ((socketfd = socket(AF_PACKET, SOCK_RAW, ETH_P_ALL)) == -1) {
+    if ((socketfd = socket(AF_PACKET, SOCK_RAW, htons(ETH_P_ALL))) == -1) {
         perror("listener: socketfd");
         close(socketfd);
         exit(EXIT_FAILURE);
@@ -38,9 +38,9 @@ void Device::init() {
     ifreq = (struct ifreq*) new uint8_t[sizeof(struct ifreq)];
     memset(ifreq, 0, sizeof(struct ifreq));
     memcpy(ifreq->ifr_name, if_name, IFNAMSIZ-1);
-    ioctl(socketfd, SIOCGIFFLAGS, &ifreq); //get flags
+    ioctl(socketfd, SIOCGIFFLAGS, ifreq); //get flags
     ifreq->ifr_flags |= IFF_PROMISC;
-    ioctl(socketfd, SIOCSIFFLAGS, &ifreq); //set flags
+    ioctl(socketfd, SIOCSIFFLAGS, ifreq); //set flags
 
     ifidx = (struct ifreq*) new uint8_t[sizeof(struct ifreq)];
     memset(ifidx, 0, sizeof(struct ifreq));
@@ -63,18 +63,20 @@ void Device::init() {
         exit(EXIT_FAILURE);
     }
 
-    // init MAC
+    // init M4AC
     struct ifreq if_mac;
     memset(&if_mac, 0, sizeof(struct ifreq));
     strncpy(if_mac.ifr_name, if_name, IFNAMSIZ-1);
     if (ioctl(socketfd, SIOCGIFHWADDR, &if_mac) < 0)
         perror("SIOCGIFHWADDR");
-    memcpy(MAC, if_mac.ifr_hwaddr.sa_data, 6);
+    memcpy(this->MAC, if_mac.ifr_hwaddr.sa_data, 6);
 
     //init socket_destianation
-    socket_address = new sockaddr_ll;
+    socket_address = new struct sockaddr_ll();
     socket_address->sll_ifindex = ifidx->ifr_ifindex;
     socket_address->sll_halen = ETH_ALEN;
+    socket_address->sll_protocol = ETH_P_IP;
+    socket_address->sll_family = AF_PACKET;
 
 }
 
@@ -84,12 +86,8 @@ std::shared_ptr<RawFrame> Device::listen() {
 }
 
 void Device::sendFrame(uint8_t *payload, ssize_t payloadSize) {
-
     if (sendto(socketfd, payload, payloadSize, 0, (struct sockaddr*)socket_address, sizeof(struct sockaddr_ll)) < 0)
         printf("Send failed\n");
-
-    std::cout << "ewfe" << std::endl;
-
 }
 
 Device::Device() {

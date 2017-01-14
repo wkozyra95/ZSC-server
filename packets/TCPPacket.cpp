@@ -3,6 +3,7 @@
 #include <cstdlib>
 #include <iostream>
 #include "IPv6Packet.h"
+#include "HTTPResponse.h"
 #include "../store/TCPStore.h"
 #include "../store/IPv6Store.h"
 #include "../Utils.h"
@@ -21,7 +22,7 @@ TCPPacket::TCPPacket(
         uint8_t NSflag,
         uint16_t window_size,
         uint16_t urgent_pointer,
-        uint8_t* payload,
+        const uint8_t* payload,
         ssize_t payload_length
         ) {
     this->source_port = source_port;
@@ -135,7 +136,7 @@ void TCPPacket::handle(std::shared_ptr<State> state, uint8_t* source_ip) {
                 );
         connection->ack_index = this->seq_number + payload_length;
 
-        //        std::cout << "dddddddddddddd" << connection->ack_index << std::endl;
+        // std::cout << "dddddddddddddd" << connection->ack_index << std::endl;
         std::make_shared<TCPPacket>( //send ack
                 this->destination_port,
                 this->source_port,
@@ -150,24 +151,33 @@ void TCPPacket::handle(std::shared_ptr<State> state, uint8_t* source_ip) {
                 0
                 )->respond(state, source_ip);
  
-        connection->seq_number += 10;
         uint8_t response[] = { 0x01, 0x23, 0x45, 0x67, 0x89, 0x98, 0x76, 0x54, 0x32, 0x10 };
+        std::shared_ptr<HTTPResponse> httpResponse;
+        if(this->destination_port == 7000) {
+            httpResponse = std::make_shared<HTTPResponse>(HTTP_WELCOME_PAGE);
+        } else {
+            httpResponse = std::make_shared<HTTPResponse>(HTTP_WELCOME_PAGE);
+        }
+
+        connection->seq_number += strlen(httpResponse->getPayload());
         std::make_shared<TCPPacket>(
                 this->destination_port,
                 this->source_port,
                 connection->ack_seq_number,
                 connection->ack_index,
                 20,
-                F_ACK | F_PSH,
+                F_ACK | F_PSH | F_FIN,
                 0,
                 1000,
                 0x0000,
-                response,
-                10 
+                (uint8_t*) httpResponse->getPayload(),
+                strlen(httpResponse->getPayload())
                 )->respond(state, source_ip);
     } else if (connection->state == ESTABLISHED && this->isACK && !this->isPSH) { 
-        if(connection->seq_number == this->ack_number) {
-            std::cout << "ERROR: MISSING PREVIOUS ACK retransmit3" << std::endl;
+        if(connection->seq_number != this->ack_number) {
+            std::cout << "ERROR: MISSING PREVIOUS ACK retransmit3" <<   
+                connection->seq_number << " " << this->ack_number
+                << std::endl;
         }
         connection->ack_seq_number = this->ack_number;
     }

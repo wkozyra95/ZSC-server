@@ -20,6 +20,7 @@ add_executable(
         packets/IPv6Packet.cpp packets/IPv6Packet.h
         packets/IcmpPacket.cpp packets/IcmpPacket.h
         packets/TCPPacket.cpp packets/TCPPacket.h
+        packets/HTTPResponse.cpp packets/HTTPResponse.h
 
         store/Device.cpp store/Device.h
         store/EthernetStore.cpp store/EthernetStore.h
@@ -44,6 +45,7 @@ add_executable(
         packets/IPv6Packet.cpp packets/IPv6Packet.h
         packets/IcmpPacket.cpp packets/IcmpPacket.h
         packets/TCPPacket.cpp packets/TCPPacket.h
+        packets/HTTPResponse.cpp packets/HTTPResponse.h
 
         store/EthernetStore.cpp store/EthernetStore.h
         store/IPv6Store.cpp store/IPv6Store.h

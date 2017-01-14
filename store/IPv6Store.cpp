@@ -14,7 +14,7 @@ IPv6Store::IPv6Store() {
             0x00, 0x00,
             0x00, 0x00,
             0xc0, 0xca,
-            0x1e, 0xae
+            0x1e, 0xaf
     };
     myIP = new uint8_t[16];
     memcpy(myIP, ip, 16);

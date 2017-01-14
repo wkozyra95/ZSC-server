@@ -13,7 +13,7 @@
 
 void IPv6Packet::handle(std::shared_ptr<State> store, uint8_t* mac) {
     store->ethernetStore->registerMAC(source, mac);
-    // displayPacket();
+    displayPacket();
     if(next_header == 58){
        std::make_shared<IcmpPacket>(payload, payload_length)->handle(store, source);
     }
@@ -23,7 +23,8 @@ void IPv6Packet::handle(std::shared_ptr<State> store, uint8_t* mac) {
 }
 
 void IPv6Packet::respond(std::shared_ptr<State> store) {
-    // displayPacket();
+    std::cout << "RESPONSE ipv6" << std::endl;
+    displayPacket();
     uint8_t* ethernet_payload = new uint8_t[this->payload_length + 40];
     // version
     ethernet_payload[0] = version << 4;
