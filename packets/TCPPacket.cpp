@@ -153,10 +153,10 @@ void TCPPacket::handle(std::shared_ptr<State> state, uint8_t* source_ip) {
  
         uint8_t response[] = { 0x01, 0x23, 0x45, 0x67, 0x89, 0x98, 0x76, 0x54, 0x32, 0x10 };
         std::shared_ptr<HTTPResponse> httpResponse;
-        if(this->destination_port == 7000) {
+        if(this->destination_port == 9000) {
             httpResponse = std::make_shared<HTTPResponse>(HTTP_WELCOME_PAGE);
         } else {
-            httpResponse = std::make_shared<HTTPResponse>(HTTP_WELCOME_PAGE);
+            httpResponse = std::make_shared<HTTPResponse>(HTTP_ANOTHER_PAGE);
         }
 
         connection->seq_number += strlen(httpResponse->getPayload());

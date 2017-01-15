@@ -15,6 +15,7 @@ class HTTPResponse {
         HTTPResponse(ResponseVersion verion);
         const char* getPayload();
         void getWelcomePage();
+        void getAnotherPage();
 };
 
 

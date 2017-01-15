@@ -4,7 +4,7 @@ HTTPResponse::HTTPResponse(ResponseVersion version){
     if( version == HTTP_WELCOME_PAGE) {
         this->getWelcomePage();
     } else if( version == HTTP_ANOTHER_PAGE ) {
-
+        this->getAnotherPage();
     }
 }
 
@@ -21,6 +21,7 @@ void HTTPResponse::getWelcomePage() {
         "</head>\r\n"+
         "<body>\r\n"+
         "<p>Welcome Page</p>\r\n"+
+        "<a href=\":8000\">go to another page</a>\r\n"+
         "</body>\r\n"+
         "</html>\r\n   ";
 
@@ -29,6 +30,26 @@ void HTTPResponse::getWelcomePage() {
               "Content-Type: text/html\r\n\r\n";
     this->response = header + content;  
 }
+
+void HTTPResponse::getAnotherPage() {
+    std::string content = std::string() + "<!doctype html>\r\n"+
+        "<html lang=en>\r\n"+
+        "<head>\r\n"+
+        "<meta charset=utf-8>\r\n"+
+        "<title>ZSC - project</title>\r\n"+
+        "</head>\r\n"+
+        "<body>\r\n"+
+        "<p>Another page</p>\r\n"+
+        "<a href=\":9000\">go to another page</a>\r\n"+
+        "</body>\r\n"+
+        "</html>\r\n   ";
+
+    std::string header = std::string() + "HTTP/1.1 200 OK\r\n" +
+              "Content-Length: "+std::to_string(content.size()) +"\r\n"+
+              "Content-Type: text/html\r\n\r\n";
+    this->response = header + content;  
+}
+
 
 /*
 header = "HTTP/1.1 200 OK\
