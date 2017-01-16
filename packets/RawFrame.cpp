@@ -6,7 +6,7 @@
 #include "../Utils.h"
 
 RawFrame::RawFrame(uint8_t *frame, ssize_t size) {
-    this->frame = new uint8_t[size];
+    this->frame = new uint8_t[size + 4];
     memcpy(this->frame, frame, size);
     this->size = size;
 }
