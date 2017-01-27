@@ -1,6 +1,15 @@
 # ZSC - server
 This is re-implementation of TCP/IP stack in scope minimal to coumunicate beetween two devices conected to network.
 
+### State of application
+Aplication can handle most basic protocols, minimum required to handle HTTP request. Protocol HTTP isn't implemented. There are two responses hardcoded into aplication served on certain ports.
+Suported protocols:
+- Ethernet
+- IPv6 (without fragmentation nd any other extension headers)
+- ICMP (only part required to answer NDP request)
+- TCP
+- HTTP (only hardcoded responses)
+
 ### Frame/packet format
 ##### Ethernet frame
 - destination address   [6B]
